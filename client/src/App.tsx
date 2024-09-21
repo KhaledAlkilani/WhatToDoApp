@@ -2,7 +2,7 @@ import NavBar from "./components/NavBar";
 
 const App: React.FC<{}> = () => {
   return (
-    <div className="container mx-auto">
+    <div className="md:container md:mx-auto">
       <NavBar />
     </div>
   );
