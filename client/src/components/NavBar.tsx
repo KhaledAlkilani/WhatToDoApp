@@ -29,9 +29,9 @@ const NavBar: React.FC<{}> = () => {
   };
 
   return (
-    <div className="navbar bg-info p-6 h-24">
+    <header className="bg-info p-6 h-24 flex items-center justify-between header">
       <div onClick={() => handleNavBarButtonClick("")} className="flex-1">
-        <a className="btn btn-ghost text-xl text-white">Khaled Alkilani</a>
+        <a className="btn btn-ghost text-xl text-white">WhatToDo</a>
       </div>
 
       {isTabletWidth ? (
@@ -93,7 +93,7 @@ const NavBar: React.FC<{}> = () => {
           ))}
         </ul>
       )}
-    </div>
+    </header>
   );
 };
 
