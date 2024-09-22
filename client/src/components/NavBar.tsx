@@ -29,7 +29,7 @@ const NavBar: React.FC<{}> = () => {
   };
 
   return (
-    <header className="bg-info p-6 h-24 flex items-center justify-between header">
+    <header className="bg-black p-6 h-24 flex items-center justify-between header">
       <div onClick={() => handleNavBarButtonClick("")} className="flex-1">
         <a className="btn btn-ghost text-xl text-white">WhatToDo</a>
       </div>

@@ -4,3 +4,13 @@ export enum NavButtons {
   Skills = "Skills",
   Contact = "Contact",
 }
+
+export interface Task {
+  id: number;
+  name: string;
+}
+
+export interface TaskData {
+  newTask: string;
+  tasksData: Task[];
+}
