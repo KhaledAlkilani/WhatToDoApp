@@ -1,19 +1,26 @@
-import NavBar from "./components/NavBar";
-import TaskForm from "./components/TaskForm";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Root from "./routes/Root";
+import Dashboard from "./routes/Dashboard";
+import ReactDOM from "react-dom/client";
+import Tasks from "./components/Tasks";
+import ErrorPage from "./components/ErrorPage";
 
-const App: React.FC<{}> = () => {
+export default function App() {
   return (
-    <div className="md:container md:mx-auto">
-      <NavBar />
-      <TaskForm />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Root />}>
+          <Route index element={<Dashboard />} />
+          <Route path="tasks" element={<Tasks />} />
+          <Route path="*" element={<ErrorPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
-};
+}
 
-export default App;
+const rootElement = document.getElementById("root");
+if (!rootElement) throw new Error("Failed to find the root element");
 
-/* Erillaisia tyylejä määritellä React komponentteja / funktioita
-  function App() {}
-  const App = () => {}
-  export default function App() {}
-*/
+const root = ReactDOM.createRoot(rootElement);
+root.render(<App />);

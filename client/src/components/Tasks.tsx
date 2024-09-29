@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { TaskData, Task } from "../types";
-import deleteIcon from "../assets/delete-button-svgrepo-com.svg";
+import TaskList from "./TaskList";
 
-const TaskForm: React.FC<{}> = () => {
+const Tasks: React.FC<{}> = () => {
   const [tasksList, setTasksList] = useState<TaskData>({
     newTask: "",
     tasksData: [],
@@ -15,6 +15,8 @@ const TaskForm: React.FC<{}> = () => {
       const parsedTasks = JSON.parse(savedTasks);
       if (Array.isArray(parsedTasks)) {
         setTasksList({ newTask: "", tasksData: parsedTasks });
+      } else {
+        setTasksList({ newTask: "", tasksData: [] });
       }
     }
   }, []);
@@ -49,7 +51,7 @@ const TaskForm: React.FC<{}> = () => {
     });
   };
 
-  const deleteTask = (taskId: number) => {
+  const handleDeleteTask = (taskId: number) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this task?"
     );
@@ -63,11 +65,13 @@ const TaskForm: React.FC<{}> = () => {
         ...tasksList,
         tasksData: updatedTasks,
       });
+
+      localStorage.setItem("tasksData", JSON.stringify(updatedTasks));
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen p-4 mt-4">
+    <div className="flex flex-col items-center justify-start min-h-screen p-8">
       <form
         onSubmit={handleSubmit}
         className="flex flex-col md:flex-row items-center gap-4 w-full max-w-lg"
@@ -83,23 +87,10 @@ const TaskForm: React.FC<{}> = () => {
           Add new task
         </button>
       </form>
-      <ul className="mt-6 w-full max-w-lg list-disc list-inside text-left">
-        {tasksList.tasksData.map((task) => {
-          return (
-            <div
-              key={task.id}
-              className="mb-2 flex flex-row items-center justify-start w-3/4"
-            >
-              <li className="flex-1">{task.name}</li>
-              <button onClick={() => deleteTask(task.id)}>
-                <img src={deleteIcon} width={14} alt="" />
-              </button>
-            </div>
-          );
-        })}
-      </ul>
+
+      <TaskList tasksList={tasksList} onDeleteTask={handleDeleteTask} />
     </div>
   );
 };
 
-export default TaskForm;
+export default Tasks;

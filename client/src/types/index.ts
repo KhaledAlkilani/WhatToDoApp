@@ -1,8 +1,16 @@
-export enum NavButtons {
-  About = "About",
-  Works = "Works",
-  Skills = "Skills",
-  Contact = "Contact",
+export interface NavButtonData {
+  id: string;
+  title: string;
+}
+
+export const navButtons = [
+  { id: "/", title: "Dashboard" },
+  { id: "/tasks", title: "Tasks" },
+];
+
+export interface NavButtonProps {
+  button: NavButtonData;
+  focusedBorderBottom: boolean;
 }
 
 export interface Task {
@@ -13,4 +21,9 @@ export interface Task {
 export interface TaskData {
   newTask: string;
   tasksData: Task[];
+}
+
+export interface TaskListProps {
+  tasksList: TaskData;
+  onDeleteTask: (taskId: number) => void;
 }
