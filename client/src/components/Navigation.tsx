@@ -15,10 +15,10 @@ const Navigation: React.FC<{}> = () => {
   }, [location.pathname]);
 
   return (
-    <header className="flex flex-col p-10 gap-12 border-r h-screen">
-      <div className="text-center">
+    <div className="flex flex-col p-10 gap-12 border-r h-screen">
+      <header className="text-center">
         <span className="text-xl text-black font-bold">WhatToDoApp</span>
-      </div>
+      </header>
 
       <>
         {navButtons.map((button) => (
@@ -31,7 +31,7 @@ const Navigation: React.FC<{}> = () => {
           </Link>
         ))}
       </>
-    </header>
+    </div>
   );
 };
 

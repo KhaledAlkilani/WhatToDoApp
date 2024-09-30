@@ -1,7 +1,7 @@
 import { useRouteError } from "react-router-dom";
 import errorIcon from "../assets/error-905.svg";
 
-const ErrorPage = () => {
+const ErrorPage: React.FC<{}> = () => {
   let error = useRouteError();
   console.error(error);
 
