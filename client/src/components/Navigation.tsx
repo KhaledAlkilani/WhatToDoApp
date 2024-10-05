@@ -22,11 +22,11 @@ const Navigation: React.FC<{}> = () => {
 
       <>
         {navButtons.map((button) => (
-          <Link key={button.id} to={button.id}>
+          <Link key={button.id} to={button.to}>
             <NavButton
               key={button.id}
               button={button}
-              focusedBorderBottom={focusedBorderBottom === button.id}
+              focusedBorderBottom={focusedBorderBottom === button.to}
             />
           </Link>
         ))}

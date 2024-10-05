@@ -4,8 +4,8 @@ export interface NavButtonData {
 }
 
 export const navButtons = [
-  { id: "/", title: "Dashboard" },
-  { id: "/tasks", title: "Tasks" },
+  { id: "dashboard", to: "/", title: "Dashboard" },
+  { id: "tasks", to: "/tasks", title: "Tasks" },
 ];
 
 export interface NavButtonProps {
