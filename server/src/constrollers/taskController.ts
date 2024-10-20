@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-const taskList = [
+const exampleTaskList = [
   { id: 1, name: "Task 1" },
   { id: 2, name: "Task 2" },
   { id: 3, name: "Task 3" },
@@ -8,5 +8,5 @@ const taskList = [
 ];
 
 export const getTasks = async (req: Request, res: Response) => {
-  res.json({ tasks: taskList });
+  res.json({ tasks: exampleTaskList });
 };

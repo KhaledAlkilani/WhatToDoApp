@@ -71,38 +71,41 @@ const Tasks: React.FC<{}> = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-start min-h-screen p-8">
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col md:flex-row items-center gap-4 w-full max-w-lg"
-      >
-        <input
-          type="text"
-          placeholder="New task"
-          value={tasksList.newTask}
-          onChange={handleInputChange}
-          className="input input-bordered w-full md:flex-1"
-        />
-        <button type="submit" className="btn btn-success w-full md:w-auto">
-          <span className="text-white">Add new task</span>
-        </button>
-      </form>
+    <div className="flex flex-col items-start justify-start min-h-screen p-10 w-full">
+      <div className="p-4 border border-transparent shadow-lg w-1/2 rounded-box">
+        <h1 className="font-bold text-2xl mb-4">Tasks</h1>
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col md:flex-row gap-4 w-full max-w-lg"
+        >
+          <input
+            type="text"
+            placeholder="New task"
+            value={tasksList.newTask}
+            onChange={handleInputChange}
+            className="input input-bordered w-full md:flex-1"
+          />
+          <button type="submit" className="btn btn-success md:w-auto">
+            <span className="text-white">Add new task</span>
+          </button>
+        </form>
 
-      {loading ? (
-        <div className="flex items-center justify-center mt-4">
-          <span className="loading loading-dots loading-md mt-2"></span>
-        </div>
-      ) : error ? (
-        <div className="alert alert-error flex items-center justify-center mt-4 w-full max-w-lg">
-          <p>Error fetching tasks: {error}</p>
-        </div>
-      ) : tasksList.tasksData.length > 0 ? (
-        <TaskList tasksList={tasksList} onDeleteTask={handleDeleteTask} />
-      ) : (
-        <div className="flex items-center justify-center mt-4">
-          <p>No tasks available.</p>
-        </div>
-      )}
+        {loading ? (
+          <div className="flex items-center justify-center mt-4">
+            <span className="loading loading-dots loading-md mt-2"></span>
+          </div>
+        ) : error ? (
+          <div className="alert alert-error flex items-center justify-center mt-4">
+            <p>Error fetching tasks: {error}</p>
+          </div>
+        ) : tasksList.tasksData.length > 0 ? (
+          <TaskList tasksList={tasksList} onDeleteTask={handleDeleteTask} />
+        ) : (
+          <div className="flex items-center justify-center mt-4">
+            <p>No tasks available.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

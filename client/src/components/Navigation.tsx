@@ -15,9 +15,9 @@ const Navigation: React.FC<{}> = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex flex-col p-10 gap-12 border-r h-screen">
-      <header className="text-center">
-        <span className="text-xl text-black font-bold">WhatToDoApp</span>
+    <div className="flex flex-col items-center p-10 gap-4 border-r h-screen">
+      <header className="mb-6">
+        <span className="text-3xl text-black font-extrabold">WhatToDoApp</span>
       </header>
 
       <>
