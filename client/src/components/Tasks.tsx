@@ -1,31 +1,33 @@
 import { useEffect, useState } from "react";
 import { TaskData, Task } from "../types";
 import TaskList from "./TaskList";
+import { getTasks } from "../services/apiService";
 
 const Tasks: React.FC<{}> = () => {
   const [tasksList, setTasksList] = useState<TaskData>({
     newTask: "",
     tasksData: [],
   });
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  console.log(tasksList.tasksData);
 
   useEffect(() => {
-    const savedTasks = localStorage.getItem("tasksData");
+    setLoading(true);
+    getTasks()
+      .then((data) => {
+        setTasksList({
+          tasksData: data.tasks,
+        });
+        setLoading(false);
+      })
 
-    if (savedTasks) {
-      const parsedTasks = JSON.parse(savedTasks);
-      if (Array.isArray(parsedTasks)) {
-        setTasksList({ newTask: "", tasksData: parsedTasks });
-      } else {
-        setTasksList({ newTask: "", tasksData: [] });
-      }
-    }
+      .catch((error) => {
+        setError(error.message);
+        setLoading(false);
+      });
   }, []);
-
-  useEffect(() => {
-    if (tasksList.tasksData.length > 0) {
-      localStorage.setItem("tasksData", JSON.stringify(tasksList.tasksData));
-    }
-  }, [tasksList.tasksData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTasksList({
@@ -37,12 +39,12 @@ const Tasks: React.FC<{}> = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (tasksList.newTask.trim() === "")
+    if (tasksList.newTask?.trim() === "")
       return alert("Task name cannot be empty!");
 
     const newTask: Task = {
       id: tasksList.tasksData.length + 1,
-      name: tasksList.newTask,
+      name: tasksList.newTask || "UNKNOWN",
     };
 
     setTasksList({
@@ -65,8 +67,6 @@ const Tasks: React.FC<{}> = () => {
         ...tasksList,
         tasksData: updatedTasks,
       });
-
-      localStorage.setItem("tasksData", JSON.stringify(updatedTasks));
     }
   };
 
@@ -83,12 +83,26 @@ const Tasks: React.FC<{}> = () => {
           onChange={handleInputChange}
           className="input input-bordered w-full md:flex-1"
         />
-        <button type="submit" className="btn btn-primary w-full md:w-auto">
-          Add new task
+        <button type="submit" className="btn btn-success w-full md:w-auto">
+          <span className="text-white">Add new task</span>
         </button>
       </form>
 
-      <TaskList tasksList={tasksList} onDeleteTask={handleDeleteTask} />
+      {loading ? (
+        <div className="flex items-center justify-center mt-4">
+          <span className="loading loading-dots loading-md mt-2"></span>
+        </div>
+      ) : error ? (
+        <div className="alert alert-error flex items-center justify-center mt-4 w-full max-w-lg">
+          <p>Error fetching tasks: {error}</p>
+        </div>
+      ) : tasksList.tasksData.length > 0 ? (
+        <TaskList tasksList={tasksList} onDeleteTask={handleDeleteTask} />
+      ) : (
+        <div className="flex items-center justify-center mt-4">
+          <p>No tasks available.</p>
+        </div>
+      )}
     </div>
   );
 };

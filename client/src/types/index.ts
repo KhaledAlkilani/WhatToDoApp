@@ -19,7 +19,7 @@ export interface Task {
 }
 
 export interface TaskData {
-  newTask: string;
+  newTask?: string;
   tasksData: Task[];
 }
 
