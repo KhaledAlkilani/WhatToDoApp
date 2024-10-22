@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Navigation from "../components/Navigation";
 
-const Root: React.FC<{}> = () => {
+const Root = () => {
   return (
     <div className="container flex">
       <div className="w-1/4">

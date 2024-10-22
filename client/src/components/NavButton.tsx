@@ -1,8 +1,6 @@
 import { NavButtonProps } from "../types";
 
-const NavButton: React.FC<NavButtonProps> = (props) => {
-  const { button, focusedBorderBottom } = props;
-
+const NavButton = ({ focusedBorderBottom, button }: NavButtonProps) => {
   return (
     <div className="flex">
       <div

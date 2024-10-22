@@ -1,7 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Root from "./routes/Root";
 import Dashboard from "./routes/Dashboard";
-import ReactDOM from "react-dom/client";
 import Tasks from "./components/Tasks";
 import ErrorPage from "./components/ErrorPage";
 

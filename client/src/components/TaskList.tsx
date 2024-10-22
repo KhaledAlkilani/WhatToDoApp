@@ -1,7 +1,6 @@
 import { TaskListProps } from "../types";
 
-const TaskList: React.FC<TaskListProps> = (props) => {
-  const { tasksList, onDeleteTask } = props;
+const TaskList = ({ onDeleteTask, tasksList }: TaskListProps) => {
   return (
     <ul className="mt-6 w-full max-w-lg list-disc list-inside text-left">
       {tasksList.tasksData.map((task) => {
@@ -10,7 +9,7 @@ const TaskList: React.FC<TaskListProps> = (props) => {
             key={task.id}
             className="mb-2 p-3 flex flex-row items-center justify-start w-6/7 bg-neutral-100 rounded-box"
           >
-            <text className="flex-1">{task.name}</text>
+            <span className="flex-1">{task.name}</span>
             <button
               className="btn btn-error px-3"
               onClick={() => onDeleteTask(task.id)}

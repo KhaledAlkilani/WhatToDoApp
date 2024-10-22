@@ -1,4 +1,4 @@
-const DashBoard: React.FC<{}> = () => {
+const DashBoard = () => {
   return (
     <div className="flex flex-col items-start justify-start min-h-screen p-10">
       <div className="p-4 border border-transparent shadow-lg w-1/2 rounded-box">

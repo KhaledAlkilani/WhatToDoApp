@@ -3,15 +3,13 @@ import { TaskData, Task } from "../types";
 import TaskList from "./TaskList";
 import { getTasks } from "../services/apiService";
 
-const Tasks: React.FC<{}> = () => {
+const Tasks = () => {
   const [tasksList, setTasksList] = useState<TaskData>({
     newTask: "",
     tasksData: [],
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-
-  console.log(tasksList.tasksData);
 
   useEffect(() => {
     setLoading(true);
@@ -81,7 +79,7 @@ const Tasks: React.FC<{}> = () => {
           <input
             type="text"
             placeholder="New task"
-            value={tasksList.newTask}
+            value={tasksList.newTask || ""}
             onChange={handleInputChange}
             className="input input-bordered w-full md:flex-1"
           />

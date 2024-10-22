@@ -3,7 +3,7 @@ import NavButton from "./NavButton";
 import { navButtons } from "../types";
 import { Link, useLocation } from "react-router-dom";
 
-const Navigation: React.FC<{}> = () => {
+const Navigation = () => {
   const location = useLocation();
 
   const [focusedBorderBottom, setFocusedBorderBottom] = useState(
