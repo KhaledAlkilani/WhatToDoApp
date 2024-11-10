@@ -1,9 +1,9 @@
-import { TaskListProps } from "../types";
+import { TaskListProps } from "../models/TaskModels";
 
 const TaskList = ({ onDeleteTask, tasksList }: TaskListProps) => {
   return (
     <ul className="mt-6 w-full max-w-lg list-disc list-inside text-left">
-      {tasksList.tasksData.map((task) => {
+      {tasksList.map((task) => {
         return (
           <div
             key={task.id}
@@ -12,7 +12,7 @@ const TaskList = ({ onDeleteTask, tasksList }: TaskListProps) => {
             <span className="flex-1">{task.name}</span>
             <button
               className="btn btn-error px-3"
-              onClick={() => onDeleteTask(task.id)}
+              onClick={() => onDeleteTask(task.id!)}
             >
               <span className="text-white">Delete</span>
             </button>

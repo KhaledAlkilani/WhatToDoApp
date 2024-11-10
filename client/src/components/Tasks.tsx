@@ -1,23 +1,27 @@
 import { useEffect, useState } from "react";
-import { TaskData, Task } from "../types";
+import { Task } from "../models/TaskModels";
 import TaskList from "./TaskList";
-import { getTasks } from "../services/apiService";
+import { createTask, getTasks } from "../services/apiService";
+import CreateTask from "./CreateTask";
 
 const Tasks = () => {
-  const [tasksList, setTasksList] = useState<TaskData>({
-    newTask: "",
-    tasksData: [],
+  const [tasksList, setTasksList] = useState<Task[]>([]);
+  const [newTask, setNewTask] = useState<Task>({
+    name: "",
+    content: "",
+    startDate: new Date(),
+    endDate: new Date(),
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // const isFilled = newTask.name?.trim() === "" return alert("Task name cannot be empty!");
 
   useEffect(() => {
     setLoading(true);
     getTasks()
       .then((data) => {
-        setTasksList({
-          tasksData: data.tasks,
-        });
+        setTasksList(data);
         setLoading(false);
       })
 
@@ -27,28 +31,50 @@ const Tasks = () => {
       });
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTasksList({
-      ...tasksList,
-      newTask: e.target.value,
+  const handleTaskNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTask({
+      ...newTask,
+      name: e.target.value,
     });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleTaskContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTask({
+      ...newTask,
+      content: e.target.value,
+    });
+  };
+
+  const handleTaskStartDateChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setNewTask({
+      ...newTask,
+      startDate: new Date(e.target.value),
+    });
+  };
+
+  const handleTaskEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTask({
+      ...newTask,
+      endDate: new Date(e.target.value),
+    });
+  };
+
+  const handleCreateTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (tasksList.newTask?.trim() === "")
-      return alert("Task name cannot be empty!");
+    // if (newTask.name?.trim() === "") return alert("Task name cannot be empty!");
 
-    const newTask: Task = {
-      id: tasksList.tasksData.length + 1,
-      name: tasksList.newTask || "UNKNOWN",
-    };
-
-    setTasksList({
-      newTask: "",
-      tasksData: [...tasksList.tasksData, newTask],
-    });
+    setLoading(true);
+    try {
+      const data = await createTask(newTask);
+      setTasksList([...tasksList, data]);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      console.error("Failed to create a new task.", err);
+    }
   };
 
   const handleDeleteTask = (taskId: number) => {
@@ -57,14 +83,9 @@ const Tasks = () => {
     );
 
     if (confirmDelete) {
-      const updatedTasks = tasksList.tasksData.filter(
-        (task) => task.id !== taskId
-      );
+      const updatedTasks = tasksList.filter((task) => task.id !== taskId);
 
-      setTasksList({
-        ...tasksList,
-        tasksData: updatedTasks,
-      });
+      setTasksList(updatedTasks);
     }
   };
 
@@ -72,21 +93,14 @@ const Tasks = () => {
     <div className="flex flex-col items-start justify-start min-h-screen p-10 w-full">
       <div className="p-4 border border-transparent shadow-lg w-1/2 rounded-box">
         <h1 className="font-bold text-2xl mb-4">Tasks</h1>
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col md:flex-row gap-4 w-full max-w-lg"
-        >
-          <input
-            type="text"
-            placeholder="New task"
-            value={tasksList.newTask || ""}
-            onChange={handleInputChange}
-            className="input input-bordered w-full md:flex-1"
-          />
-          <button type="submit" className="btn btn-success md:w-auto">
-            <span className="text-white">Add new task</span>
-          </button>
-        </form>
+        <CreateTask
+          newTask={newTask}
+          onNameChange={handleTaskNameChange}
+          onContentChange={handleTaskContentChange}
+          onStartDateChange={handleTaskStartDateChange}
+          onEndDateChange={handleTaskEndDateChange}
+          onFormSubmit={handleCreateTask}
+        />
 
         {loading ? (
           <div className="flex items-center justify-center mt-4">
@@ -96,7 +110,7 @@ const Tasks = () => {
           <div className="alert alert-error flex items-center justify-center mt-4">
             <p>Error fetching tasks: {error}</p>
           </div>
-        ) : tasksList.tasksData.length > 0 ? (
+        ) : tasksList.length > 0 ? (
           <TaskList tasksList={tasksList} onDeleteTask={handleDeleteTask} />
         ) : (
           <div className="flex items-center justify-center mt-4">
