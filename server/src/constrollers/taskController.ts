@@ -3,12 +3,9 @@ import Task from "../models/taskModel ";
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
-    // Get the tasks from the model
     const tasks = await Task.find();
-    console.log(tasks);
     res.status(200).json(tasks);
   } catch (err: any) {
-    // If get tasks from db failed
     res
       .status(500)
       .json({ message: "Couldn't get tasks from the db", error: err.message });

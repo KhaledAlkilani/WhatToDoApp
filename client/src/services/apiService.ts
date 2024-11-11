@@ -1,9 +1,4 @@
-import axios, {
-  AxiosError,
-  AxiosRequestConfig,
-  AxiosResponse,
-  RawAxiosRequestHeaders,
-} from "axios";
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { Task } from "../models/TaskModels";
 
 const apiClient = axios.create({
@@ -41,8 +36,7 @@ export async function createTask(task: Task) {
       newTask,
       config
     );
-    console.log(response.status); // Check response status
-    return response.data; // return the data directly from the response
+    return response.data;
   } catch (error) {
     const err = error as AxiosError;
     throw new Error(`Error creating a task message: ${err.response?.data}`);

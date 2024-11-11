@@ -21,7 +21,6 @@ const CreateTask = ({
 }: CreateTaskProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Toggle create task accordion open/close
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
   };
@@ -42,7 +41,6 @@ const CreateTask = ({
         />
       </div>
 
-      {/* Accordion Body (Form) */}
       {isOpen && (
         <form
           onSubmit={onFormSubmit}

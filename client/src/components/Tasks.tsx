@@ -15,7 +15,7 @@ const Tasks = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  // const isFilled = newTask.name?.trim() === "" return alert("Task name cannot be empty!");
+  // const isValid = newTask.name?.trim() === "" return alert("Task name cannot be empty!");
 
   useEffect(() => {
     setLoading(true);
@@ -63,8 +63,6 @@ const Tasks = () => {
 
   const handleCreateTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // if (newTask.name?.trim() === "") return alert("Task name cannot be empty!");
 
     setLoading(true);
     try {
