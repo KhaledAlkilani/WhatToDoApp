@@ -21,7 +21,7 @@ const CreateTask = ({
 }: CreateTaskProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Toggle accordion open/close
+  // Toggle create task accordion open/close
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
   };
