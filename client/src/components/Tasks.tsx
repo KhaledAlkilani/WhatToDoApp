@@ -75,7 +75,6 @@ const Tasks = () => {
     setLoading(true);
     try {
       const data = await createTask(newTask);
-      // checkFieldsValidation();
       setTasksList([...tasksList, data]);
       setLoading(false);
     } catch (err) {
