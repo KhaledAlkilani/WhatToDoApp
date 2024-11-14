@@ -1,4 +1,4 @@
-import { NavButtonProps } from "../types";
+import { NavButtonProps } from "../../types";
 
 const NavButton = ({ focusedBorderBottom, button }: NavButtonProps) => {
   return (

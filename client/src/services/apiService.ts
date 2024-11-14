@@ -12,13 +12,14 @@ export async function getTasks() {
     return response.data;
   } catch (error) {
     const err = error as AxiosError;
-    throw new Error(`Error fetching tasks message: ${err.response?.data}`);
+    throw new Error(`Error fetching tasks. ${err.response?.data}`);
   }
 }
 
 export async function createTask(task: Task) {
   try {
     const newTask: Task = {
+      _id: task._id,
       name: task.name,
       content: task.content,
       startDate: task.startDate,
@@ -39,6 +40,16 @@ export async function createTask(task: Task) {
     return response.data;
   } catch (error) {
     const err = error as AxiosError;
-    throw new Error(`Error creating a task message: ${err.response?.data}`);
+    throw new Error(`Error creating a task. ${err.response?.data}`);
+  }
+}
+
+export async function deleteTask(taskId: string) {
+  try {
+    const response: AxiosResponse = await apiClient.delete(`/tasks/${taskId}`);
+    return response.data;
+  } catch (error) {
+    const err = error as AxiosError;
+    throw new Error(`Failed to delete a task. ${err.response?.data}`);
   }
 }

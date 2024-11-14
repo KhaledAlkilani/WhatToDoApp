@@ -1,12 +1,15 @@
+export enum TaskStatus {
+  NEW = "New",
+  IN_PROGRESS = "In-Progress",
+  DONE = "Done",
+  ALL = "All",
+}
+
 export interface Task {
-  id?: number;
+  _id: string;
   name: string;
   content: string;
   startDate?: Date;
   endDate?: Date;
-}
-
-export interface TaskListProps {
-  tasksList: Task[];
-  onDeleteTask: (taskId: number) => void;
+  status?: TaskStatus;
 }

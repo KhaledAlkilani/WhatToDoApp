@@ -1,34 +1,90 @@
 import { useState } from "react";
 import arrowDown from "../assets/arrow-down.svg";
-import { Task } from "../models/TaskModels";
+import { Task } from "../../models/TaskModels";
+import { createTask } from "../../services/apiService";
 
 interface CreateTaskProps {
-  newTask: Task;
-  onNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onContentChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onStartDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onEndDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onFormSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  setTasksList: React.Dispatch<React.SetStateAction<Task[]>>;
+  tasksList: Task[];
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const CreateTask = ({
-  newTask,
-  onNameChange,
-  onContentChange,
-  onStartDateChange,
-  onEndDateChange,
-  onFormSubmit,
+  setTasksList,
+  tasksList,
+  setLoading,
 }: CreateTaskProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [newTask, setNewTask] = useState<Task>({
+    _id: "",
+    name: "",
+    content: "",
+    startDate: new Date(),
+    endDate: new Date(),
+  });
+  const [isCreateTaskFormOpen, setIsCreateTaskFormOpen] = useState(false);
 
-  const toggleAccordion = () => {
-    setIsOpen(!isOpen);
+  const toggleCreateTaskFormAccordion = () => {
+    setIsCreateTaskFormOpen(!isCreateTaskFormOpen);
+  };
+
+  const handleTaskNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTask({
+      ...newTask,
+      name: e.target.value,
+    });
+  };
+
+  const handleTaskContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTask({
+      ...newTask,
+      content: e.target.value,
+    });
+  };
+
+  const handleTaskStartDateChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setNewTask({
+      ...newTask,
+      startDate: new Date(e.target.value),
+    });
+  };
+
+  const handleTaskEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewTask({
+      ...newTask,
+      endDate: new Date(e.target.value),
+    });
+  };
+
+  const checkFieldsValidation = () => {
+    const isValid = newTask.name.trim() !== "" || newTask.content.trim() !== "";
+
+    if (!isValid) {
+      return alert("Task name and content cannot be empty!");
+    }
+  };
+
+  const handleCreateTask = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    checkFieldsValidation();
+
+    setLoading(true);
+    try {
+      const data = await createTask(newTask);
+      setTasksList([...tasksList, data]);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+      console.error("Failed to create a new task.", err);
+    }
   };
 
   return (
     <div className="w-full max-w-lg mx-auto">
       <div
-        onClick={toggleAccordion}
+        onClick={toggleCreateTaskFormAccordion}
         className="flex items-center cursor-pointer p-4 bg-gray-100 rounded-lg shadow-sm"
       >
         <h2 className="text-xl font-semibold flex-1">Create a New Task</h2>
@@ -36,14 +92,14 @@ const CreateTask = ({
           src={arrowDown}
           alt="Toggle arrow"
           className={`w-5 h-5 transition-transform duration-300 ${
-            isOpen ? "rotate-180" : ""
+            isCreateTaskFormOpen ? "rotate-180" : ""
           }`}
         />
       </div>
 
-      {isOpen && (
+      {isCreateTaskFormOpen && (
         <form
-          onSubmit={onFormSubmit}
+          onSubmit={handleCreateTask}
           className="flex flex-col gap-6 w-full bg-white p-6 border-b-2 border-blue-200"
         >
           <div>
@@ -58,7 +114,7 @@ const CreateTask = ({
               id="taskName"
               placeholder="New task"
               value={newTask.name || ""}
-              onChange={onNameChange}
+              onChange={handleTaskNameChange}
               className="input input-bordered w-full"
             />
           </div>
@@ -75,7 +131,7 @@ const CreateTask = ({
               id="taskContent"
               placeholder="Task description"
               value={newTask.content || ""}
-              onChange={onContentChange}
+              onChange={handleTaskContentChange}
               className="input input-bordered w-full"
             />
           </div>
@@ -91,7 +147,7 @@ const CreateTask = ({
               type="date"
               id="startDate"
               value={newTask.startDate?.toISOString().slice(0, 10) || ""}
-              onChange={onStartDateChange}
+              onChange={handleTaskStartDateChange}
               className="input input-bordered w-full"
             />
           </div>
@@ -107,7 +163,7 @@ const CreateTask = ({
               type="date"
               id="endDate"
               value={newTask.endDate?.toISOString().slice(0, 10) || ""}
-              onChange={onEndDateChange}
+              onChange={handleTaskEndDateChange}
               className="input input-bordered w-full"
             />
           </div>

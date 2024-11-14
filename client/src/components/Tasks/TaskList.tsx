@@ -1,7 +1,13 @@
 import { useState } from "react";
-import { TaskListProps } from "../models/TaskModels";
+import { Task } from "../../models/TaskModels";
 import arrowDown from "../assets/arrow-down.svg";
 import trashCan from "../assets/trash-can.svg";
+import TaskStatusIcons from "./TaskStatusIcons";
+
+export interface TaskListProps {
+  tasksList: Task[];
+  onDeleteTask: (taskId: string) => void;
+}
 
 const TaskList = ({ onDeleteTask, tasksList }: TaskListProps) => {
   const [openTaskAccordion, setOpenTaskAccordion] = useState<{
@@ -16,30 +22,30 @@ const TaskList = ({ onDeleteTask, tasksList }: TaskListProps) => {
   };
 
   return (
-    <ul className="mt-6 w-full max-w-lg list-disc list-inside text-left">
+    <ul className="mt-3 w-full max-w-lg list-disc list-inside text-left">
       {tasksList.map((task, index) => {
         return (
-          <div key={task.id} className="mb-4 w-full">
+          <div key={task._id} className="mb-4 w-full">
             <div
               onClick={() => toggleAccordion(index)}
               className="flex justify-between items-center p-4 bg-gray-100 rounded-lg shadow-sm cursor-pointer"
             >
-              <h2 className="text-xl font-semibold flex-1">{task.name}</h2>
+              <TaskStatusIcons task={task} />
+              <h2 className="text-xl font-semibold flex-1 ml-3">{task.name}</h2>
               {!openTaskAccordion[index] && (
                 <img
                   src={trashCan}
                   style={{
                     filter: "red",
                   }}
-                  width={16}
+                  width={18}
                   alt="Close icon"
                   onClick={(e) => {
                     e.stopPropagation();
-                    onDeleteTask(task.id!);
+                    onDeleteTask(task._id!);
                   }}
                 />
               )}
-
               <img
                 src={arrowDown}
                 alt="Toggle arrow"
@@ -52,6 +58,10 @@ const TaskList = ({ onDeleteTask, tasksList }: TaskListProps) => {
             {openTaskAccordion[index] && (
               <div className="p-4 bg-white rounded-lg shadow-sm">
                 <div className="flex flex-col space-y-2">
+                  <div>
+                    <strong>Name: </strong>
+                    <p>{task.name}</p>
+                  </div>
                   <div>
                     <strong>Content: </strong>
                     <p>{task.content}</p>
@@ -70,7 +80,8 @@ const TaskList = ({ onDeleteTask, tasksList }: TaskListProps) => {
                     className="btn btn-error text-white"
                     onClick={(e) => {
                       e.stopPropagation();
-                      onDeleteTask(task.id!);
+                      console.log("Deleting task with id:", task._id);
+                      onDeleteTask(task._id);
                     }}
                   >
                     Delete

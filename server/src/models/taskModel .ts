@@ -1,11 +1,19 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export enum TaskStatus {
+  NEW = "New",
+  IN_PROGRESS = "In-Progress",
+  DONE = "Done",
+  ALL = "All",
+}
+
 // Task document
 interface Task extends Document {
   name: string;
   content: string;
   startDate?: Date;
   endDate?: Date;
+  status: TaskStatus;
 }
 
 // Task schema
@@ -26,6 +34,16 @@ const taskSchema: Schema = new Schema(
     endDate: {
       type: Date,
       required: false,
+    },
+    status: {
+      type: String,
+      enum: [
+        TaskStatus.NEW,
+        TaskStatus.IN_PROGRESS,
+        TaskStatus.DONE,
+        TaskStatus.ALL,
+      ],
+      default: TaskStatus.NEW,
     },
   },
   {

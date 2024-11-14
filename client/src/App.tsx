@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Root from "./routes/Root";
 import Dashboard from "./routes/Dashboard";
-import Tasks from "./components/Tasks";
+import Tasks from "./components/Tasks/Tasks";
 import ErrorPage from "./components/ErrorPage";
 
 export default function App() {
