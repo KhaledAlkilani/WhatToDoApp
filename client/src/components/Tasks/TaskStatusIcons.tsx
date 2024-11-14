@@ -1,6 +1,6 @@
-import greenCircle from "../assets/green-circle-icon.svg";
-import blueCircle from "../assets/blue-circle-icon.svg";
-import orangeCircle from "../assets/orange-circle-icon.svg";
+import greenCircle from "../../assets/green-circle-icon.svg";
+import blueCircle from "../../assets/blue-circle-icon.svg";
+import orangeCircle from "../../assets/orange-circle-icon.svg";
 import { Task, TaskStatus } from "../../models/TaskModels";
 import { getTaskStatus } from "../../utils/getTaskStatus";
 

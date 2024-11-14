@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Task } from "../../models/TaskModels";
-import arrowDown from "../assets/arrow-down.svg";
-import trashCan from "../assets/trash-can.svg";
+import arrowDown from "../../assets/arrow-down.svg";
+import trashCan from "../../assets/trash-can.svg";
 import TaskStatusIcons from "./TaskStatusIcons";
 
 export interface TaskListProps {

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import arrowDown from "../assets/arrow-down.svg";
+import arrowDown from "../../assets/arrow-down.svg";
 import { Task } from "../../models/TaskModels";
 import { createTask } from "../../services/apiService";
 
