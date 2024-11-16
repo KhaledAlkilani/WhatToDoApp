@@ -44,6 +44,32 @@ export async function createTask(task: Task) {
   }
 }
 
+export async function editTask(
+  taskId: string,
+  updatedTaskData: {
+    name: string;
+    content: string;
+    startDate: Date;
+    endDate: Date;
+  }
+) {
+  try {
+    const response: AxiosResponse = await apiClient.put(
+      `/tasks/${taskId}`,
+      updatedTaskData
+    );
+
+    // Return the response data (updated task).
+    return response.data;
+  } catch (error) {
+    const err = error as AxiosError;
+
+    throw new Error(
+      `Failed to edit a task. ${err.response?.data || err.message}`
+    );
+  }
+}
+
 export async function deleteTask(taskId: string) {
   try {
     const response: AxiosResponse = await apiClient.delete(`/tasks/${taskId}`);

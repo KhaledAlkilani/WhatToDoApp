@@ -1,32 +1,18 @@
-import { useState } from "react";
-import arrowDown from "../../assets/arrow-down.svg";
-import { Task } from "../../models/TaskModels";
-import { createTask } from "../../services/apiService";
+import { Task, TaskFormMode } from "../../models/TaskModels";
 
 interface CreateTaskProps {
-  setTasksList: React.Dispatch<React.SetStateAction<Task[]>>;
-  tasksList: Task[];
-  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  mode: TaskFormMode;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  newTask: Task;
+  setNewTask: React.Dispatch<React.SetStateAction<Task>>;
 }
 
 const CreateTask = ({
-  setTasksList,
-  tasksList,
-  setLoading,
+  onSubmit,
+  mode,
+  setNewTask,
+  newTask,
 }: CreateTaskProps) => {
-  const [newTask, setNewTask] = useState<Task>({
-    _id: "",
-    name: "",
-    content: "",
-    startDate: new Date(),
-    endDate: new Date(),
-  });
-  const [isCreateTaskFormOpen, setIsCreateTaskFormOpen] = useState(false);
-
-  const toggleCreateTaskFormAccordion = () => {
-    setIsCreateTaskFormOpen(!isCreateTaskFormOpen);
-  };
-
   const handleTaskNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTask({
       ...newTask,
@@ -46,133 +32,107 @@ const CreateTask = ({
   ) => {
     setNewTask({
       ...newTask,
-      startDate: new Date(e.target.value),
+      startDate: e.target.value,
     });
   };
 
   const handleTaskEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTask({
       ...newTask,
-      endDate: new Date(e.target.value),
+      endDate: e.target.value,
     });
   };
 
-  const checkFieldsValidation = () => {
-    const isValid = newTask.name.trim() !== "" || newTask.content.trim() !== "";
+  // Format date to string, or return an empty string for null or undefined
+  const formatDateForInput = (
+    date: Date | string | null | undefined
+  ): string => {
+    if (!date) return ""; // Return empty if null or undefined
 
-    if (!isValid) {
-      return alert("Task name and content cannot be empty!");
+    if (date instanceof Date) {
+      return date.toISOString().split("T")[0];
     }
-  };
 
-  const handleCreateTask = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    checkFieldsValidation();
-
-    setLoading(true);
     try {
-      const data = await createTask(newTask);
-      setTasksList([...tasksList, data]);
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-      console.error("Failed to create a new task.", err);
+      return new Date(date).toISOString().split("T")[0];
+    } catch {
+      return "";
     }
   };
 
   return (
     <div className="w-full max-w-lg mx-auto">
-      <div
-        onClick={toggleCreateTaskFormAccordion}
-        className="flex items-center cursor-pointer p-4 bg-gray-100 rounded-lg shadow-sm"
+      <form
+        onSubmit={onSubmit}
+        className="flex flex-col gap-6 w-full bg-white p-6 border-b-2 border-blue-200"
       >
-        <h2 className="text-xl font-semibold flex-1">Create a New Task</h2>
-        <img
-          src={arrowDown}
-          alt="Toggle arrow"
-          className={`w-5 h-5 transition-transform duration-300 ${
-            isCreateTaskFormOpen ? "rotate-180" : ""
-          }`}
-        />
-      </div>
+        <div>
+          <label
+            htmlFor="taskName"
+            className="block text-sm font-semibold mb-2"
+          >
+            Task Name
+          </label>
+          <input
+            type="text"
+            id="taskName"
+            value={newTask.name}
+            onChange={handleTaskNameChange}
+            className="input input-bordered w-full"
+          />
+        </div>
 
-      {isCreateTaskFormOpen && (
-        <form
-          onSubmit={handleCreateTask}
-          className="flex flex-col gap-6 w-full bg-white p-6 border-b-2 border-blue-200"
-        >
-          <div>
-            <label
-              htmlFor="taskName"
-              className="block text-sm font-semibold mb-2"
-            >
-              Task Name
-            </label>
-            <input
-              type="text"
-              id="taskName"
-              placeholder="New task"
-              value={newTask.name || ""}
-              onChange={handleTaskNameChange}
-              className="input input-bordered w-full"
-            />
-          </div>
+        <div>
+          <label
+            htmlFor="taskContent"
+            className="block text-sm font-semibold mb-2"
+          >
+            Task Content
+          </label>
+          <input
+            type="text"
+            id="taskContent"
+            value={newTask.content}
+            onChange={handleTaskContentChange}
+            className="input input-bordered w-full"
+          />
+        </div>
 
-          <div>
-            <label
-              htmlFor="taskContent"
-              className="block text-sm font-semibold mb-2"
-            >
-              Task Content
-            </label>
-            <input
-              type="text"
-              id="taskContent"
-              placeholder="Task description"
-              value={newTask.content || ""}
-              onChange={handleTaskContentChange}
-              className="input input-bordered w-full"
-            />
-          </div>
+        <div>
+          <label
+            htmlFor="startDate"
+            className="block text-sm font-semibold mb-2"
+          >
+            Start Date
+          </label>
+          <input
+            type="date"
+            id="startDate"
+            value={formatDateForInput(newTask.startDate)}
+            onChange={handleTaskStartDateChange}
+            className="input input-bordered w-full"
+          />
+        </div>
 
-          <div>
-            <label
-              htmlFor="startDate"
-              className="block text-sm font-semibold mb-2"
-            >
-              Start Date
-            </label>
-            <input
-              type="date"
-              id="startDate"
-              value={newTask.startDate?.toISOString().slice(0, 10) || ""}
-              onChange={handleTaskStartDateChange}
-              className="input input-bordered w-full"
-            />
-          </div>
+        <div>
+          <label htmlFor="endDate" className="block text-sm font-semibold mb-2">
+            End Date
+          </label>
+          <input
+            type="date"
+            id="endDate"
+            value={formatDateForInput(newTask.endDate)}
+            onChange={handleTaskEndDateChange}
+            className="input input-bordered w-full"
+          />
+        </div>
 
-          <div>
-            <label
-              htmlFor="endDate"
-              className="block text-sm font-semibold mb-2"
-            >
-              End Date
-            </label>
-            <input
-              type="date"
-              id="endDate"
-              value={newTask.endDate?.toISOString().slice(0, 10) || ""}
-              onChange={handleTaskEndDateChange}
-              className="input input-bordered w-full"
-            />
-          </div>
-
-          <button type="submit" className="btn btn-success w-full mt-4">
-            <span className="text-white">Add New Task</span>
+        <div className="flex justify-end">
+          <button type="submit" className="btn btn-success text-white">
+            {mode === TaskFormMode.CREATE ? "Create Task" : "Save Changes"}
           </button>
-        </form>
-      )}
+        </div>
+      </form>
     </div>
   );
 };

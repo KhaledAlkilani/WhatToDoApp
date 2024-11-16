@@ -4,7 +4,6 @@ export enum TaskStatus {
   NEW = "New",
   IN_PROGRESS = "In-Progress",
   DONE = "Done",
-  ALL = "All",
 }
 
 // Task document
@@ -41,7 +40,7 @@ const taskSchema: Schema = new Schema(
         TaskStatus.NEW,
         TaskStatus.IN_PROGRESS,
         TaskStatus.DONE,
-        TaskStatus.ALL,
+        TaskStatus.NEW,
       ],
       default: TaskStatus.NEW,
     },

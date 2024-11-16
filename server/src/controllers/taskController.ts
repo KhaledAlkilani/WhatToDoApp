@@ -26,14 +26,35 @@ export const createTask = async (req: Request, res: Response) => {
   } catch (err: any) {
     res
       .status(500)
-      .json({ message: "Error to create task", error: err.message });
+      .json({ message: "Failed to create task", error: err.message });
   }
 };
 
-export const deleteTask = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const editTask = async (req: Request, res: Response) => {
+  try {
+    const { name, content, startDate, endDate } = req.body;
+    const taskId = req.params.id;
+
+    const updatedTask = await Task.findByIdAndUpdate(
+      taskId,
+      { name, content, startDate, endDate },
+      { new: true }
+    );
+
+    if (!updatedTask) {
+      res.status(404).json({ message: "Task not found" });
+      return;
+    }
+
+    res.status(200).json(updatedTask);
+  } catch (err: any) {
+    res
+      .status(500)
+      .json({ message: "failed to edit task", error: err.message });
+  }
+};
+
+export const deleteTask = async (req: Request, res: Response) => {
   try {
     const taskId = req.params.id;
 
