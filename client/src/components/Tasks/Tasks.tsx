@@ -171,8 +171,8 @@ const Tasks = () => {
       : tasksList.filter((task) => getTaskStatus(task) === selectedStatus);
 
   return (
-    <div className="flex flex-col items-start justify-start min-h-screen p-10 w-full">
-      <div className="p-4 border border-transparent shadow-lg w-1/2 rounded-box">
+    <div className="flex flex-col items-start min-h-screen p-10 w-full">
+      <div className="p-4 border border-transparent shadow-lg w-3/4 rounded-box">
         <div className="flex">
           <h1 className="font-bold text-2xl mb-4 flex-1">Tasks</h1>
 

@@ -30,7 +30,7 @@ const TaskList = ({
   };
 
   return (
-    <ul className="mt-3 w-full max-w-lg list-disc list-inside text-left">
+    <ul className="mt-3 w-full list-disc list-inside text-left">
       {tasksList.map((task, index) => {
         return (
           <div key={task._id} className="mb-4 w-full">

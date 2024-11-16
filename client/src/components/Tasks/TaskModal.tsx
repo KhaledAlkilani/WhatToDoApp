@@ -1,5 +1,6 @@
 import { Task, TaskFormMode } from "../../models/TaskModels";
 import TaskForm from "./TaskForm";
+import closeIcon from "../../assets/close-icon.svg";
 
 interface TaskModalProps {
   onClose: () => void;
@@ -35,7 +36,7 @@ const TaskModal = ({
               }}
               className="text-gray-500 text-lg"
             >
-              &times;
+              <img src={closeIcon} alt="close icon" width={18} />
             </button>
           </div>
           <TaskForm
