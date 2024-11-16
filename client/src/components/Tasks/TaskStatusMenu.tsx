@@ -25,8 +25,7 @@ const TaskStatusMenu = ({
     <div className="relative inline-block w-full">
       <h1 className="text-lg mb-1 ml-1 font-bold">Status</h1>
       <div className="">
-        <button
-          type="button"
+        <div
           className="inline-flex items-center w-full rounded-md border border-black bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100"
           onClick={toggleTaskStatusMenu}
         >
@@ -56,7 +55,7 @@ const TaskStatusMenu = ({
               clipRule="evenodd"
             />
           </svg>
-        </button>
+        </div>
       </div>
 
       {isStatusMenuOpen && (

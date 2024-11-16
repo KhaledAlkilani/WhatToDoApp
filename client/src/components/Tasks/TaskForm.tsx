@@ -1,18 +1,13 @@
 import { Task, TaskFormMode } from "../../models/TaskModels";
 
-interface CreateTaskProps {
+interface TaskFormProps {
   mode: TaskFormMode;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   newTask: Task;
   setNewTask: React.Dispatch<React.SetStateAction<Task>>;
 }
 
-const CreateTask = ({
-  onSubmit,
-  mode,
-  setNewTask,
-  newTask,
-}: CreateTaskProps) => {
+const TaskForm = ({ onSubmit, mode, setNewTask, newTask }: TaskFormProps) => {
   const handleTaskNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewTask({
       ...newTask,
@@ -137,4 +132,4 @@ const CreateTask = ({
   );
 };
 
-export default CreateTask;
+export default TaskForm;

@@ -1,5 +1,5 @@
 import { Task, TaskFormMode } from "../../models/TaskModels";
-import CreateTask from "./CreateTask";
+import TaskForm from "./TaskForm";
 
 interface TaskModalProps {
   onClose: () => void;
@@ -38,7 +38,7 @@ const TaskModal = ({
               &times;
             </button>
           </div>
-          <CreateTask
+          <TaskForm
             mode={mode}
             onSubmit={onSubmit}
             setNewTask={setNewTask}
