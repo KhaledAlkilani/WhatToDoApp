@@ -8,7 +8,7 @@ import {
   getTasks,
 } from "../../services/apiService";
 import TaskStatusMenu from "./TaskStatusMenu";
-import { getTaskStatus } from "../../utils/getTaskStatus";
+import { formatDateForInput, getTaskStatus } from "../../utils";
 import TaskModal from "./TaskModal";
 
 const initialData: Task = {
@@ -41,30 +41,6 @@ const Tasks = () => {
         setLoading(false);
       });
   }, [isModalOpen]);
-
-  const checkFieldsValidation = () => {
-    const isValid = task.name.trim() !== "" || task.content.trim() !== "";
-
-    if (!isValid) {
-      return alert("Task name and content cannot be empty!");
-    }
-  };
-
-  const checkFieldsChange = () => {
-    const taskToEdit = tasksList.find((task) => task);
-
-    if (!taskToEdit) return;
-
-    const isChanged =
-      task.name.trim() !== taskToEdit.name.trim() ||
-      task.content.trim() !== taskToEdit.content.trim() ||
-      task.startDate !== taskToEdit.startDate ||
-      task.endDate !== taskToEdit.endDate;
-
-    if (isChanged) {
-      return alert(`Are you sure you want to update the task: ${task.name}?`);
-    }
-  };
 
   const renderNoTasksMessage = () => {
     if (selectedStatus === TaskStatus.NEW) {
@@ -100,14 +76,12 @@ const Tasks = () => {
   const handleCreateTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    checkFieldsValidation();
-
     setLoading?.(true);
     try {
       const data = await createTask(task);
       setTasksList?.([...(tasksList || []), data]);
       setLoading?.(false);
-      setTask(initialData);
+      setTask(task);
       setIsModalOpen(false);
     } catch (err) {
       setLoading?.(false);
@@ -117,7 +91,6 @@ const Tasks = () => {
 
   const handleEditTask = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    checkFieldsChange(); // Check if the fields are changed
 
     // Destructure newTask to get properties
     const { _id, name, content, startDate, endDate } = task;
@@ -193,6 +166,7 @@ const Tasks = () => {
               mode={formMode}
               newTask={task}
               setNewTask={setTask}
+              tasksList={tasksList}
             />
           )}
         </div>

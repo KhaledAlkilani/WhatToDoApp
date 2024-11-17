@@ -8,6 +8,7 @@ interface TaskModalProps {
   mode: TaskFormMode;
   newTask: Task;
   setNewTask: React.Dispatch<React.SetStateAction<Task>>;
+  tasksList: Task[];
 }
 
 const TaskModal = ({
@@ -16,6 +17,7 @@ const TaskModal = ({
   mode,
   newTask,
   setNewTask,
+  tasksList,
 }: TaskModalProps) => {
   return (
     <>
@@ -27,7 +29,7 @@ const TaskModal = ({
         >
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">
-              {mode === TaskFormMode.CREATE ? "Create Task" : "Edit Task"}
+              {mode === TaskFormMode.CREATE ? "New Task" : "Edit Task"}
             </h2>
             <button
               onClick={(e: React.FormEvent) => {
@@ -43,7 +45,8 @@ const TaskModal = ({
             mode={mode}
             onSubmit={onSubmit}
             setNewTask={setNewTask}
-            newTask={newTask}
+            task={newTask}
+            tasksList={tasksList}
           />
         </div>
       </div>

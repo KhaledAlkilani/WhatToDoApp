@@ -11,3 +11,19 @@ export const getTaskStatus = (task: Task) => {
     return TaskStatus.IN_PROGRESS;
   }
 };
+
+export const formatDateForInput = (
+  date: Date | string | null | undefined
+): string => {
+  if (!date) return "";
+
+  if (date instanceof Date) {
+    return date.toISOString().split("T")[0];
+  }
+
+  try {
+    return new Date(date).toISOString().split("T")[0];
+  } catch {
+    return "";
+  }
+};
