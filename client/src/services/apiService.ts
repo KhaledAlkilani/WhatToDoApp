@@ -70,7 +70,7 @@ export async function editTask(
   }
 }
 
-export async function deleteTask(taskId: string) {
+export async function deleteTask(taskId: string): Promise<void> {
   try {
     const response: AxiosResponse = await apiClient.delete(`/tasks/${taskId}`);
     return response.data;
