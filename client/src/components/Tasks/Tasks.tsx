@@ -8,7 +8,7 @@ import {
   getTasks,
 } from "../../services/apiService";
 import TaskStatusMenu from "./TaskStatusMenu";
-import { formatDateForInput, getTaskStatus } from "../../utils";
+import { getTaskStatus } from "../../utils";
 import TaskModal from "./TaskModal";
 
 const initialData: Task = {
@@ -40,7 +40,7 @@ const Tasks = () => {
         setError(error.message);
         setLoading(false);
       });
-  }, [isModalOpen]);
+  }, []);
 
   const renderNoTasksMessage = () => {
     if (selectedStatus === TaskStatus.NEW) {
@@ -50,7 +50,7 @@ const Tasks = () => {
     } else if (selectedStatus === TaskStatus.DONE) {
       return "No done tasks.";
     } else {
-      return "";
+      return "No tasks.";
     }
   };
 
@@ -81,8 +81,7 @@ const Tasks = () => {
       const data = await createTask(task);
       setTasksList?.([...(tasksList || []), data]);
       setLoading?.(false);
-      setTask(task);
-      setIsModalOpen(false);
+      setTask(initialData);
     } catch (err) {
       setLoading?.(false);
       console.error("Failed to create a new task.", err);
@@ -109,9 +108,8 @@ const Tasks = () => {
       const data = await editTask(_id, existingTaskToEdit);
       setTasksList((prev) =>
         prev.map((task) => (task._id === _id ? data : task))
-      ); // Update the task in state
+      );
       setLoading?.(false);
-      setIsModalOpen(false); // Close modal
     } catch (err) {
       setLoading?.(false);
       console.error("Failed to update task.", err);
@@ -164,8 +162,8 @@ const Tasks = () => {
                   : handleEditTask
               }
               mode={formMode}
-              newTask={task}
-              setNewTask={setTask}
+              task={task}
+              setTask={setTask}
               tasksList={tasksList}
             />
           )}

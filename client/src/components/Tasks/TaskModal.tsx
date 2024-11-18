@@ -6,8 +6,8 @@ interface TaskModalProps {
   onClose: () => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   mode: TaskFormMode;
-  newTask: Task;
-  setNewTask: React.Dispatch<React.SetStateAction<Task>>;
+  task: Task;
+  setTask: React.Dispatch<React.SetStateAction<Task>>;
   tasksList: Task[];
 }
 
@@ -15,8 +15,8 @@ const TaskModal = ({
   onClose,
   onSubmit,
   mode,
-  newTask,
-  setNewTask,
+  task,
+  setTask,
   tasksList,
 }: TaskModalProps) => {
   return (
@@ -43,8 +43,8 @@ const TaskModal = ({
         <TaskForm
           mode={mode}
           onSubmit={onSubmit}
-          setNewTask={setNewTask}
-          task={newTask}
+          setTask={setTask}
+          task={task}
           tasksList={tasksList}
         />
       </div>

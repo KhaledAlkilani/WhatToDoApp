@@ -1,33 +1,38 @@
 import { useState } from "react";
-import { Task, TaskFormMode } from "../../models/TaskModels";
+import {
+  Task,
+  TaskFormMode,
+  TaskFormOnSubmitStatuses,
+} from "../../models/TaskModels";
 import { formatDateForInput } from "../../utils";
 
 interface TaskFormProps {
   mode: TaskFormMode;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   task: Task;
-  setNewTask: React.Dispatch<React.SetStateAction<Task>>;
+  setTask: React.Dispatch<React.SetStateAction<Task>>;
   tasksList: Task[];
 }
 
 const TaskForm = ({
   onSubmit,
   mode,
-  setNewTask,
+  setTask,
   task,
   tasksList,
 }: TaskFormProps) => {
-  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState<boolean>(false);
+  const [statusMessage, setStatusMessage] =
+    useState<TaskFormOnSubmitStatuses | null>(null);
 
   const handleTaskNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTask({
+    setTask({
       ...task,
       name: e.target.value,
     });
   };
 
   const handleTaskContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTask({
+    setTask({
       ...task,
       content: e.target.value,
     });
@@ -36,14 +41,14 @@ const TaskForm = ({
   const handleTaskStartDateChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setNewTask({
+    setTask({
       ...task,
       startDate: e.target.value,
     });
   };
 
   const handleTaskEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewTask({
+    setTask({
       ...task,
       endDate: e.target.value,
     });
@@ -51,14 +56,12 @@ const TaskForm = ({
 
   const checkFieldsValidation = (): boolean => {
     const isValid = task.name.trim() !== "" && task.content.trim() !== "";
-
     return !isValid;
   };
 
   const checkFieldsChange = () => {
     const taskToEdit = tasksList.find((task) => task);
-
-    if (!taskToEdit) return;
+    if (!taskToEdit) return false; // Return false if task not found.
 
     const isChanged =
       task.name.trim() !== taskToEdit.name.trim() ||
@@ -68,32 +71,39 @@ const TaskForm = ({
       formatDateForInput(task.endDate) !==
         formatDateForInput(taskToEdit.endDate);
 
-    return !isChanged;
+    return isChanged; // Return true if changes have been made
   };
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setHasAttemptedSubmit(true); // User has attempted to submit
 
-    const canProceed = checkFieldsChange(); // Only show the alert if changes have been made
+    // Check if fields are empty
+    if (checkFieldsValidation()) {
+      setStatusMessage(TaskFormOnSubmitStatuses.FILLINFIELDS); // Show message if fields are empty
+      return;
+    }
 
-    // If fields are changed, show a confirmation prompt
-    if (!canProceed) {
+    // If fields are changed (for edit mode), show confirmation prompt
+    const canProceed = checkFieldsChange(); // Check if changes were made
+
+    if (!canProceed && mode === TaskFormMode.UPDATE) {
       const userConfirmed = window.confirm(
         `Are you sure you want to change this task: ${task.name}?`
       );
       if (!userConfirmed) {
-        return; // If the user cancels, stop the submission
+        return; // Stop if the user cancels
       }
     }
 
-    // If validation fails, return early and don't submit the form
-    if (checkFieldsValidation()) {
-      return;
-    }
+    // If everything is okay, submit the form
+    await onSubmit(e); // onSubmit could be either handleCreateTask or handleEditTask
 
-    // If validation passes, proceed with the actual submission
-    await onSubmit(e);
+    // Set status message based on the task mode
+    if (mode === TaskFormMode.CREATE) {
+      setStatusMessage(TaskFormOnSubmitStatuses.TASKCREATED); // Task created successfully
+    } else if (mode === TaskFormMode.UPDATE) {
+      setStatusMessage(TaskFormOnSubmitStatuses.TASKUPDATED); // Task updated successfully
+    }
   };
 
   return (
@@ -163,17 +173,31 @@ const TaskForm = ({
           />
         </div>
 
-        {hasAttemptedSubmit && checkFieldsValidation() && (
+        {/* Status Message */}
+        {statusMessage === TaskFormOnSubmitStatuses.FILLINFIELDS && (
           <div className="text-red-500 text-sm mt-2">
             Please fill in the fields.
           </div>
         )}
 
+        {statusMessage === TaskFormOnSubmitStatuses.TASKCREATED && (
+          <div className="text-green-500 text-sm mt-2">
+            Task created successfully.
+          </div>
+        )}
+
+        {statusMessage === TaskFormOnSubmitStatuses.TASKUPDATED && (
+          <div className="text-green-500 text-sm mt-2">
+            Task updated successfully.
+          </div>
+        )}
+
+        {/* Submit Button */}
         <div className="flex justify-end">
           <button
             type="submit"
             className="btn btn-success text-white"
-            disabled={mode === TaskFormMode.UPDATE && checkFieldsChange()}
+            disabled={mode === TaskFormMode.UPDATE && !checkFieldsChange()} // Disable button if no changes
           >
             {mode === TaskFormMode.CREATE ? "Create Task" : "Save Changes"}
           </button>

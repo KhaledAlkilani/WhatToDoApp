@@ -4,6 +4,12 @@ export enum TaskStatus {
   DONE = "Done",
 }
 
+export enum TaskFormOnSubmitStatuses {
+  FILLINFIELDS = "Fill in fiels",
+  TASKCREATED = "Task created successfully",
+  TASKUPDATED = "Task updated successfully.",
+}
+
 export enum TaskFormMode {
   CREATE = "create",
   UPDATE = "edit",
