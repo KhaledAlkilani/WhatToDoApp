@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Task, TaskFormMode, TaskStatus } from "../../models/TaskModels";
 import TaskList from "./TaskList";
 import {
@@ -142,61 +142,56 @@ const Tasks = () => {
       : tasksList.filter((task) => getTaskStatus(task) === selectedStatus);
 
   return (
-    <div className="flex flex-col items-start min-h-screen p-10 w-full">
-      <div className="p-4 border border-transparent shadow-lg w-3/4 rounded-box">
-        <div className="flex">
-          <h1 className="font-bold text-2xl mb-4 flex-1">Tasks</h1>
-
-          <button
-            onClick={() => openModal(TaskFormMode.CREATE)}
-            className="btn btn-primary"
-          >
-            Create Task
-          </button>
-          {isModalOpen && (
-            <TaskModal
-              onClose={closeModal}
-              onSubmit={
-                formMode === TaskFormMode.CREATE
-                  ? handleCreateTask
-                  : handleEditTask
-              }
-              mode={formMode}
-              task={task}
-              setTask={setTask}
-              tasksList={tasksList}
-            />
-          )}
-        </div>
-        <div className="mt-5">
-          <TaskStatusMenu
-            onSelectStatus={(status: TaskStatus | null) =>
-              setSelectedStatus(status)
-            }
-            selectedStatus={selectedStatus}
-          />
-        </div>
-
-        {loading ? (
-          <div className="flex items-center justify-center mt-4">
-            <span className="loading loading-dots loading-md mt-2"></span>
-          </div>
-        ) : error ? (
-          <div className="alert alert-error flex items-center justify-center mt-4">
-            <p>Error fetching tasks: {error}</p>
-          </div>
-        ) : filteredTasks.length ? (
-          <TaskList
-            tasksList={filteredTasks}
-            onDeleteTask={handleDeleteTask}
-            onOpenEditTaskModal={(mode, taskId) => openModal(mode, taskId)}
-          />
-        ) : (
-          <div className="flex items-center justify-center mt-4">
-            <p>{renderNoTasksMessage()}</p>
-          </div>
-        )}
+    <div className="flex flex-col">
+      <div className="p-8">
+        <h1 className="font-bold text-2xl">Tasks</h1>
       </div>
+
+      {/* <button
+          onClick={() => openModal(TaskFormMode.CREATE)}
+          className="btn btn-primary"
+        >
+          Create Task
+        </button> 
+        */}
+      {isModalOpen && (
+        <TaskModal
+          onClose={closeModal}
+          onSubmit={
+            formMode === TaskFormMode.CREATE ? handleCreateTask : handleEditTask
+          }
+          mode={formMode}
+          task={task}
+          setTask={setTask}
+          tasksList={tasksList}
+        />
+      )}
+
+      {loading ? (
+        <div className="flex items-center justify-center mt-4">
+          <span className="loading loading-dots loading-md mt-2"></span>
+        </div>
+      ) : error ? (
+        <div className="alert alert-error flex items-center justify-center mt-4">
+          <p>Error fetching tasks: {error}</p>
+        </div>
+      ) : filteredTasks.length ? (
+        <TaskList
+          task={task}
+          onSetTask={setTask}
+          selectedStatus={selectedStatus}
+          tasksList={filteredTasks}
+          onTasksList={setTasksList}
+          onSelectedStatus={setSelectedStatus}
+          onDeleteTask={handleDeleteTask}
+          onOpenEditTaskModal={(mode, taskId) => openModal(mode, taskId)}
+        />
+      ) : (
+        <div className="flex items-center justify-center mt-4">
+          <p>{renderNoTasksMessage()}</p>
+        </div>
+      )}
+      {/* </div> */}
     </div>
   );
 };

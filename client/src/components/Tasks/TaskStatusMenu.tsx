@@ -22,40 +22,37 @@ const TaskStatusMenu = ({
   };
 
   return (
-    <div className="relative inline-block w-full">
-      <h1 className="text-lg mb-1 ml-1 font-bold">Status</h1>
-      <div className="">
-        <div
-          className="inline-flex items-center w-full rounded-md border border-black bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100"
-          onClick={toggleTaskStatusMenu}
-        >
-          <div className="flex flex-1">
-            <span>
-              {selectedStatus === null ? "Select task status" : selectedStatus}
-            </span>
-          </div>
-          <button
-            onClick={() => {
-              onSelectStatus?.(null), setIsStatusMenuOpen(true);
-            }}
-            className="text-gray-500 text-lg"
-          >
-            &times;
-          </button>
-          <svg
-            className="ml-2 h-5 w-5 text-gray-400"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fillRule="evenodd"
-              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
+    <div className="relative inline-block">
+      <div
+        className="flex items-center w-72 rounded-md border border-black bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100"
+        onClick={toggleTaskStatusMenu}
+      >
+        <div className="flex flex-1">
+          <span>
+            {selectedStatus === null ? "Select task status" : selectedStatus}
+          </span>
         </div>
+        <button
+          onClick={() => {
+            onSelectStatus?.(null), setIsStatusMenuOpen(true);
+          }}
+          className="text-gray-500 text-lg"
+        >
+          &times;
+        </button>
+        <svg
+          className="ml-2 h-5 w-5 text-gray-400"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            fillRule="evenodd"
+            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+            clipRule="evenodd"
+          />
+        </svg>
       </div>
 
       {isStatusMenuOpen && (

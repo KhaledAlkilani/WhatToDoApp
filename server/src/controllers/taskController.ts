@@ -72,3 +72,54 @@ export const deleteTask = async (req: Request, res: Response) => {
       .json({ message: "Failed to delete task", error: err.message });
   }
 };
+
+// Search tasks by name
+export const searchTasksByName = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { name } = req.query;
+
+    if (!name || typeof name !== "string") {
+      res.status(400).json({
+        error: "Name query parameter is required and must be a string",
+      });
+      return;
+    }
+
+    // Find tasks matching the name (case-insensitive)
+    const tasks = await Task.find({
+      name: { $regex: new RegExp(name, "i") }, // Case-insensitive search using regex
+    });
+
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.error("Error in getSearchByName:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Filter tasks by date range
+export const getTasksByDateRange = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { startDate, endDate } = req.query;
+
+  if (!startDate || !endDate) {
+    res.status(400).json({ error: "Start date and end date are required" });
+    return;
+  }
+
+  try {
+    const tasks = await Task.find({
+      startDate: { $gte: new Date(startDate as string) },
+      endDate: { $lte: new Date(endDate as string) },
+    });
+    res.status(200).json(tasks);
+  } catch (err) {
+    console.error("Error fetching tasks by date range:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};

@@ -79,3 +79,35 @@ export async function deleteTask(taskId: string): Promise<void> {
     throw new Error(`Failed to delete a task. ${err.response?.data}`);
   }
 }
+
+export const searchTasksByName = async (name: string) => {
+  try {
+    const response: AxiosResponse = await apiClient.get(
+      "/tasks/search-tasks-by-name",
+      {
+        params: { name },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    const err = error as AxiosError;
+    console.error("Error searching tasks by name:", err.message);
+    throw new Error("Error searching tasks by name");
+  }
+};
+
+export const getTasksByDateRange = async (
+  startDate: string,
+  endDate: string
+) => {
+  try {
+    const response: AxiosResponse = await apiClient.get("/tasks/date-range", {
+      params: { startDate, endDate },
+    });
+    return response.data;
+  } catch (error) {
+    const err = error as AxiosError;
+    console.error("Error filtering tasks by date range:", err.message);
+    throw new Error("Error filtering tasks by date range.");
+  }
+};

@@ -5,7 +5,7 @@ export enum TaskStatus {
 }
 
 export enum TaskFormOnSubmitStatuses {
-  FILLINFIELDS = "Fill in fiels",
+  FILLINFIELDS = "Fill in fields",
   TASKCREATED = "Task created successfully",
   TASKUPDATED = "Task updated successfully.",
 }
@@ -22,4 +22,9 @@ export interface Task {
   startDate?: Date | string;
   endDate?: Date | string;
   status?: TaskStatus;
+}
+
+export enum MenuType {
+  STATUS = "Status",
+  DATE_RANGE = "Date range",
 }
