@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 import { Task, TaskFormMode, TaskStatus } from "../../models/TaskModels";
 import TaskList from "./TaskList";
 import {
@@ -7,7 +7,6 @@ import {
   editTask,
   getTasks,
 } from "../../services/apiService";
-import TaskStatusMenu from "./TaskStatusMenu";
 import { getTaskStatus } from "../../utils";
 import TaskModal from "./TaskModal";
 
@@ -142,11 +141,7 @@ const Tasks = () => {
       : tasksList.filter((task) => getTaskStatus(task) === selectedStatus);
 
   return (
-    <div className="flex flex-col">
-      <div className="p-8">
-        <h1 className="font-bold text-2xl">Tasks</h1>
-      </div>
-
+    <>
       {/* <button
           onClick={() => openModal(TaskFormMode.CREATE)}
           className="btn btn-primary"
@@ -184,15 +179,14 @@ const Tasks = () => {
           onTasksList={setTasksList}
           onSelectedStatus={setSelectedStatus}
           onDeleteTask={handleDeleteTask}
-          onOpenEditTaskModal={(mode, taskId) => openModal(mode, taskId)}
+          onOpenTaskModal={(mode, taskId) => openModal(mode, taskId)}
         />
       ) : (
         <div className="flex items-center justify-center mt-4">
           <p>{renderNoTasksMessage()}</p>
         </div>
       )}
-      {/* </div> */}
-    </div>
+    </>
   );
 };
 

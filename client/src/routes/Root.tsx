@@ -7,7 +7,7 @@ const Root = () => {
       <div className="col-span-3 bg-gray-100">
         <Navigation />
       </div>
-      <div className="col-span-9 bg-white overflow-y-hidden">
+      <div className="col-span-9 overflow-y-hidden">
         <Outlet />
       </div>
     </div>

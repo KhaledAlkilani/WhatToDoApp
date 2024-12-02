@@ -61,7 +61,7 @@ const Menu = ({
     <div className="relative inline-block">
       {/* Toggle Button */}
       <div
-        className="flex items-center w-72 rounded-md border border-black bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100"
+        className="flex items-center w-60 rounded-md border border-black bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100"
         onClick={toggleMenu}
       >
         {menuType === MenuType.DATE_RANGE && (

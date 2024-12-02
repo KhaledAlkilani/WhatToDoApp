@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import {
   Task,
   TaskFormMode,
@@ -31,7 +31,9 @@ const TaskForm = ({
     });
   };
 
-  const handleTaskContentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTaskContentChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     setTask({
       ...task,
       content: e.target.value,
@@ -106,6 +108,8 @@ const TaskForm = ({
     }
   };
 
+  const id = useId();
+
   return (
     <div className="w-full max-w-lg mx-auto">
       <form
@@ -121,23 +125,22 @@ const TaskForm = ({
           </label>
           <input
             type="text"
-            id="taskName"
+            id={`taskName-${id}`}
             value={task.name}
             onChange={handleTaskNameChange}
             className={"input input-bordered w-full"}
           />
         </div>
 
-        <div>
+        <div style={{ overflowY: "auto" }}>
           <label
             htmlFor="taskContent"
             className="block text-sm font-semibold mb-2"
           >
             Task Content
           </label>
-          <input
-            type="text"
-            id="taskContent"
+          <textarea
+            id={`taskContent-${id}`}
             value={task.content}
             onChange={handleTaskContentChange}
             className={"input input-bordered w-full"}
@@ -153,7 +156,7 @@ const TaskForm = ({
           </label>
           <input
             type="date"
-            id="startDate"
+            id={`startDate-${id}`}
             value={formatDateForInput(task.startDate)}
             onChange={handleTaskStartDateChange}
             className={"input input-bordered w-full"}
@@ -166,7 +169,7 @@ const TaskForm = ({
           </label>
           <input
             type="date"
-            id="endDate"
+            id={`endDate-${id}`}
             value={formatDateForInput(task.endDate)}
             onChange={handleTaskEndDateChange}
             className={"input input-bordered w-full"}
