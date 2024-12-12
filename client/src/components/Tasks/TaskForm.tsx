@@ -114,7 +114,7 @@ const TaskForm = ({
     <div className="w-full max-w-lg mx-auto">
       <form
         onSubmit={handleFormSubmit}
-        className="flex flex-col gap-6 w-full bg-white p-6 border-b-2 border-blue-200"
+        className="flex flex-col gap-6 w-full bg-white p-6"
       >
         <div>
           <label
@@ -140,6 +140,7 @@ const TaskForm = ({
             Task Content
           </label>
           <textarea
+            style={{ resize: "none", height: 80 }}
             id={`taskContent-${id}`}
             value={task.content}
             onChange={handleTaskContentChange}

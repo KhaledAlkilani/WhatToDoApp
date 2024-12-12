@@ -6,9 +6,12 @@ import {
   deleteTask,
   editTask,
   getTasks,
+  searchTasksByName,
 } from "../../services/apiService";
 import { getTaskStatus } from "../../utils";
 import TaskModal from "./TaskModal";
+import TasksViewHeader from "./TasksViewHeader";
+import { useSearchDebounce } from "../../hooks/useSearchDebounce";
 
 const initialData: Task = {
   _id: "",
@@ -26,6 +29,10 @@ const Tasks = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [formMode, setFormMode] = useState<TaskFormMode>(TaskFormMode.CREATE);
   const [task, setTask] = useState<Task>(initialData);
+  const [searchTaskName, setSearchTaskName] = useState<string>("");
+  const [searchedTasks, setSearchedTasks] = useState<Task[] | null>(null);
+
+  const debouncedSearchTaskName = useSearchDebounce(searchTaskName, 500); // Debounce the search input by 500ms
 
   useEffect(() => {
     setLoading(true);
@@ -40,6 +47,23 @@ const Tasks = () => {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    handleSearchTasks();
+  }, [debouncedSearchTaskName]);
+
+  const handleSearchTasks = async () => {
+    if (debouncedSearchTaskName.trim() === "") {
+      setSearchedTasks(null);
+      return;
+    }
+    try {
+      const searchedTasks = await searchTasksByName(debouncedSearchTaskName);
+      setSearchedTasks(searchedTasks);
+    } catch (err) {
+      console.error("Error fetching searched tasks.", err);
+    }
+  };
 
   const renderNoTasksMessage = () => {
     if (selectedStatus === TaskStatus.NEW) {
@@ -142,6 +166,16 @@ const Tasks = () => {
 
   return (
     <>
+      <TasksViewHeader
+        searchTaskName={searchTaskName}
+        selectedStatus={selectedStatus}
+        task={task}
+        tasksList={tasksList}
+        onSetTask={setTask}
+        onTasksList={setTasksList}
+        onSearchTaskName={setSearchTaskName}
+        onSelectedStatus={setSelectedStatus}
+      />
       {/* <button
           onClick={() => openModal(TaskFormMode.CREATE)}
           className="btn btn-primary"
@@ -162,21 +196,13 @@ const Tasks = () => {
         />
       )}
 
-      {loading ? (
-        <div className="flex items-center justify-center mt-4">
-          <span className="loading loading-dots loading-md mt-2"></span>
-        </div>
-      ) : error ? (
-        <div className="alert alert-error flex items-center justify-center mt-4">
-          <p>Error fetching tasks: {error}</p>
-        </div>
-      ) : filteredTasks.length ? (
+      {filteredTasks.length ? (
         <TaskList
-          task={task}
-          onSetTask={setTask}
+          searchedTasks={searchedTasks}
+          loading={loading}
+          error={error}
           selectedStatus={selectedStatus}
           tasksList={filteredTasks}
-          onTasksList={setTasksList}
           onSelectedStatus={setSelectedStatus}
           onDeleteTask={handleDeleteTask}
           onOpenTaskModal={(mode, taskId) => openModal(mode, taskId)}
