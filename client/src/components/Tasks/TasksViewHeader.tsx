@@ -1,5 +1,10 @@
 import { useId } from "react";
-import { MenuType, Task, TaskStatus } from "../../models/TaskModels";
+import {
+  MenuType,
+  Task,
+  TaskFormMode,
+  TaskStatus,
+} from "../../models/TaskModels";
 import Menu from "./Menu";
 import { getTasksByDateRange } from "../../services/apiService";
 
@@ -12,6 +17,7 @@ interface TasksViewHeaderProps {
   onSetTask: (value: Task) => void;
   onSelectedStatus: (value: TaskStatus | null) => void;
   onTasksList: (value: Task[]) => void;
+  onOpenTaskModal: (mode: TaskFormMode, taskId?: string) => void;
 }
 
 const TasksViewHeader = ({
@@ -23,6 +29,7 @@ const TasksViewHeader = ({
   onSetTask,
   onSelectedStatus,
   onTasksList,
+  onOpenTaskModal,
 }: TasksViewHeaderProps) => {
   const handleApplyDateRange = async () => {
     if (!task.startDate || !task.endDate) {
@@ -52,8 +59,16 @@ const TasksViewHeader = ({
 
   return (
     <div className="sticky top-0 bg-white z-10 shadow">
-      <div className="p-8">
+      <div className="flex justify-between p-8">
         <h1 className="font-bold text-2xl text-center md:text-left">Tasks</h1>
+        <div className="relative float-end sticky top-4 right-12 border shadow-2xl rounded color-white">
+          <button
+            onClick={() => onOpenTaskModal(TaskFormMode.CREATE)}
+            className="btn btn-success rounded text-white"
+          >
+            Create Task
+          </button>
+        </div>
       </div>
       <div className="flex flex-col md:flex-row px-4 md:px-10 md:items-end">
         <div className="flex-1 mb-4 md:mb-6">

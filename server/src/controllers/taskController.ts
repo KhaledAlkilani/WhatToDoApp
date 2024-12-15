@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, RequestHandler, Response } from "express";
 import Task from "../models/taskModel ";
 
 export const getTasks = async (req: Request, res: Response) => {
@@ -66,10 +66,10 @@ export const deleteTask = async (req: Request, res: Response) => {
     }
 
     res.status(200).json({ message: "Task deleted successfully" });
-  } catch (err: any) {
+  } catch (error: any) {
     res
       .status(500)
-      .json({ message: "Failed to delete task", error: err.message });
+      .json({ message: "Failed to delete task", error: error.message });
   }
 };
 
@@ -118,8 +118,37 @@ export const getTasksByDateRange = async (
       endDate: { $lte: new Date(endDate as string) },
     });
     res.status(200).json(tasks);
-  } catch (err) {
-    console.error("Error fetching tasks by date range:", err);
+  } catch (error) {
+    console.error("Error fetching tasks by date range:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
+// Pagination function
+export const getTasksWithPagination = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const skip = (page - 1) * limit;
+
+    const tasks = await Task.find().skip(skip).limit(limit);
+    const totalCount = await Task.countDocuments();
+    const totalPages = Math.ceil(totalCount / limit);
+
+    res.status(200).json({
+      tasks,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalCount,
+        limit,
+      },
+    });
+  } catch (err) {
+    console.error("Error fetching tasks with pagination:", err);
+    res.status(500).json({ error: "Failed to fetch tasks" });
   }
 };

@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
 import { Task, TaskFormMode, TaskStatus } from "../../models/TaskModels";
-import TaskList from "./TaskList";
+import TasksList from "./TasksList";
 import {
   createTask,
   deleteTask,
   editTask,
   getTasks,
+  getTasksWithPagination,
   searchTasksByName,
 } from "../../services/apiService";
 import { getTaskStatus } from "../../utils";
 import TaskModal from "./TaskModal";
 import TasksViewHeader from "./TasksViewHeader";
 import { useSearchDebounce } from "../../hooks/useSearchDebounce";
+import previousArrow from "../../assets/previous-arrow-back.svg";
+import nextArrow from "../../assets/right-arrow-next.svg";
 
 const initialData: Task = {
   _id: "",
@@ -31,6 +34,8 @@ const Tasks = () => {
   const [task, setTask] = useState<Task>(initialData);
   const [searchTaskName, setSearchTaskName] = useState<string>("");
   const [searchedTasks, setSearchedTasks] = useState<Task[] | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   const debouncedSearchTaskName = useSearchDebounce(searchTaskName, 500); // Debounce the search input by 500ms
 
@@ -51,6 +56,31 @@ const Tasks = () => {
   useEffect(() => {
     handleSearchTasks();
   }, [debouncedSearchTaskName]);
+
+  // Fetch tasks whenever currentPage changes
+  useEffect(() => {
+    fetchPagedTasks(currentPage);
+  }, [currentPage]);
+
+  // Fetch tasks whenever currentPage changes
+  const fetchPagedTasks = async (page: number) => {
+    setLoading(true);
+    try {
+      const data = await getTasksWithPagination(page);
+      setTasksList(data.tasks);
+      setTotalPages(data.pagination.totalPages);
+      setLoading(false);
+    } catch (error) {
+      setError("Failed to fetch tasks");
+      setLoading(false);
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
   const handleSearchTasks = async () => {
     if (debouncedSearchTaskName.trim() === "") {
@@ -175,14 +205,8 @@ const Tasks = () => {
         onTasksList={setTasksList}
         onSearchTaskName={setSearchTaskName}
         onSelectedStatus={setSelectedStatus}
+        onOpenTaskModal={openModal}
       />
-      {/* <button
-          onClick={() => openModal(TaskFormMode.CREATE)}
-          className="btn btn-primary"
-        >
-          Create Task
-        </button> 
-        */}
       {isModalOpen && (
         <TaskModal
           onClose={closeModal}
@@ -197,7 +221,7 @@ const Tasks = () => {
       )}
 
       {filteredTasks.length ? (
-        <TaskList
+        <TasksList
           searchedTasks={searchedTasks}
           loading={loading}
           error={error}
@@ -212,6 +236,25 @@ const Tasks = () => {
           <p>{renderNoTasksMessage()}</p>
         </div>
       )}
+
+      {/* Pagination controls */}
+      <div className="absolute bottom-3 right-10 flex items-center gap-4 bg-white h-10 p-2 rounded-lg shadow-lg max-w-max">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="text-black border-white hover:bg-white hover:text-black"
+        >
+          <img src={previousArrow} alt="back arrow" width={20} />
+        </button>
+        <span className="text-black text-lg">{`Page ${currentPage} of ${totalPages}`}</span>
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="text-black border-white hover:bg-white hover:text-black"
+        >
+          <img src={nextArrow} alt="next arrow" width={20} />
+        </button>
+      </div>
     </>
   );
 };

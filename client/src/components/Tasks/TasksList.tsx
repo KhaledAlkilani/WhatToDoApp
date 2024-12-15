@@ -2,11 +2,9 @@ import { Task, TaskFormMode, TaskStatus } from "../../models/TaskModels";
 import trashCan from "../../assets/trash-can.svg";
 import TaskStatusIcons from "./TaskStatusIcons";
 import "../../index.css";
-import { useState } from "react";
 import { getTaskStatus } from "../../utils";
-import { useResponsive } from "../../hooks/useResponsive";
 
-export interface TaskListProps {
+export interface TasksListProps {
   loading: boolean;
   error: string | null;
   selectedStatus: TaskStatus | null;
@@ -17,7 +15,7 @@ export interface TaskListProps {
   onOpenTaskModal: (mode: TaskFormMode, taskId?: string) => void;
 }
 
-const TaskList = ({
+const TasksList = ({
   loading,
   error,
   searchedTasks,
@@ -25,11 +23,7 @@ const TaskList = ({
   tasksList,
   onDeleteTask,
   onOpenTaskModal,
-}: TaskListProps) => {
-  const [accordionOpen, setAccordionOpen] = useState(false);
-
-  const isMobileOrTablet = useResponsive();
-
+}: TasksListProps) => {
   const tasksToRender = (searchedTasks ?? tasksList).filter((task) => {
     // Status filter
     const matchesStatus =
@@ -113,16 +107,8 @@ const TaskList = ({
           </div>
         </div>
       )}
-      <div className="relative float-end sticky bottom-4 right-12 border shadow-2xl rounded color-white">
-        <button
-          onClick={() => onOpenTaskModal(TaskFormMode.CREATE)}
-          className="btn btn-success rounded text-white"
-        >
-          Create Task
-        </button>
-      </div>
     </>
   );
 };
 
-export default TaskList;
+export default TasksList;

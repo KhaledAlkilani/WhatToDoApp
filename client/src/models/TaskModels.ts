@@ -28,3 +28,10 @@ export enum MenuType {
   STATUS = "Status",
   DATE_RANGE = "Date range",
 }
+
+export interface PaginationData {
+  currentPage: number;
+  totalPages: number;
+  totalCount: number;
+  limit: number;
+}

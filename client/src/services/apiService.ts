@@ -111,3 +111,16 @@ export const getTasksByDateRange = async (
     throw new Error("Error filtering tasks by date range.");
   }
 };
+
+export const getTasksWithPagination = async (currentPage: number) => {
+  try {
+    const response: AxiosResponse = await apiClient.get("/tasks/pagination", {
+      params: { page: currentPage },
+    });
+    return response.data;
+  } catch (error) {
+    const err = error as AxiosError;
+    console.error("Error fetching tasks with pagination:", err.message);
+    throw new Error("Error fetching tasks with pagination.");
+  }
+};
