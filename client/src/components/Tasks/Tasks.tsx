@@ -244,15 +244,15 @@ const Tasks = () => {
           disabled={currentPage === 1}
           className="text-black border-white hover:bg-white hover:text-black"
         >
-          <img src={previousArrow} alt="back arrow" width={20} />
+          <img src={previousArrow} alt="back arrow" width={18} />
         </button>
-        <span className="text-black text-lg">{`Page ${currentPage} of ${totalPages}`}</span>
+        <span className="text-black text-md">{`Page ${currentPage} of ${totalPages}`}</span>
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
           className="text-black border-white hover:bg-white hover:text-black"
         >
-          <img src={nextArrow} alt="next arrow" width={20} />
+          <img src={nextArrow} alt="next arrow" width={18} />
         </button>
       </div>
     </>
