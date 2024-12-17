@@ -10,7 +10,8 @@ export const navButtons = [
 
 export interface NavButtonProps {
   button: NavButtonData;
-  focusedBorderBottom: boolean;
+  focusedButton: boolean;
+  onFocusChange: (path: string) => void;
 }
 
 export interface Task {

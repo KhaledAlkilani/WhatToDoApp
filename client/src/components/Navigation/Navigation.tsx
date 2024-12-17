@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import NavButton from "./NavButton";
 import { navButtons } from "../../types";
 import { Link, useLocation } from "react-router-dom";
@@ -6,18 +6,16 @@ import { Link, useLocation } from "react-router-dom";
 const Navigation = () => {
   const location = useLocation();
 
-  const [focusedBorderBottom, setFocusedBorderBottom] = useState(
-    location.pathname
-  );
+  const [focusedButton, setFocusedButton] = useState(location.pathname);
 
-  useEffect(() => {
-    setFocusedBorderBottom(location.pathname);
-  }, [location.pathname]);
+  const handleFocusChange = (path: string) => {
+    setFocusedButton(path);
+  };
 
   return (
     <div className="flex flex-col items-center p-10 gap-4 border-r h-screen">
       <header className="mb-6">
-        <span className="text-3xl text-black font-extrabold">WhatToDoApp</span>
+        <span className="text-3xl font-extrabold">WhatToDoApp</span>
       </header>
 
       <>
@@ -26,7 +24,8 @@ const Navigation = () => {
             <NavButton
               key={button.id}
               button={button}
-              focusedBorderBottom={focusedBorderBottom === button.to}
+              focusedButton={focusedButton === button.to}
+              onFocusChange={() => handleFocusChange(button.to)}
             />
           </Link>
         ))}

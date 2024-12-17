@@ -1,18 +1,19 @@
 import { NavButtonProps } from "../../types";
 
-const NavButton = ({ focusedBorderBottom, button }: NavButtonProps) => {
+const NavButton = ({
+  focusedButton,
+  button,
+  onFocusChange,
+}: NavButtonProps) => {
   return (
-    <div className="flex">
-      <div
-        className={
-          focusedBorderBottom ? "border border-success rounded-box" : ""
-        }
-      >
-        <button className="btn btn-wide btn-outline border rounded-box">
-          {button.title}
-        </button>
-      </div>
-    </div>
+    <button
+      onClick={() => onFocusChange(button.id)}
+      className={`btn btn-wide btn-primary tracking-wider text-whity ${
+        focusedButton ? "bg-pastelGray" : ""
+      }`}
+    >
+      {button.title}
+    </button>
   );
 };
 

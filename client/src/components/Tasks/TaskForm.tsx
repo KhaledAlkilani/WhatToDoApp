@@ -179,19 +179,19 @@ const TaskForm = ({
 
         {/* Status Message */}
         {statusMessage === TaskFormOnSubmitStatuses.FILLINFIELDS && (
-          <div className="text-red-500 text-sm mt-2">
+          <div className="text-pastelWarning text-sm mt-2">
             Please fill in the fields.
           </div>
         )}
 
         {statusMessage === TaskFormOnSubmitStatuses.TASKCREATED && (
-          <div className="text-green-500 text-sm mt-2">
+          <div className="text-pastelGreen text-sm mt-2">
             Task created successfully.
           </div>
         )}
 
         {statusMessage === TaskFormOnSubmitStatuses.TASKUPDATED && (
-          <div className="text-green-500 text-sm mt-2">
+          <div className="text-pastelGreen text-sm mt-2">
             Task updated successfully.
           </div>
         )}
@@ -200,10 +200,10 @@ const TaskForm = ({
         <div className="flex justify-end">
           <button
             type="submit"
-            className="btn btn-success text-white"
+            className="btn btn-primary text-whity"
             disabled={mode === TaskFormMode.UPDATE && !checkFieldsChange()} // Disable button if no changes
           >
-            {mode === TaskFormMode.CREATE ? "Create Task" : "Save Changes"}
+            {mode === TaskFormMode.CREATE ? "Add Task" : "Save Changes"}
           </button>
         </div>
       </form>

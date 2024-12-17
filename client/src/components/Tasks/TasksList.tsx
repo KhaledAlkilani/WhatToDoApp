@@ -97,7 +97,7 @@ const TasksList = ({
                       e.preventDefault();
                       onOpenTaskModal(TaskFormMode.UPDATE, task._id);
                     }}
-                    className="btn btn-primary"
+                    className="btn btn-primary text-whity"
                   >
                     Open
                   </button>
