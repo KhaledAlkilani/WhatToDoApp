@@ -44,6 +44,11 @@ const taskSchema: Schema = new Schema(
       ],
       default: TaskStatus.NEW,
     },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: false,
+    },
   },
   {
     timestamps: true,

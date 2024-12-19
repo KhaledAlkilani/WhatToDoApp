@@ -124,3 +124,25 @@ export const getTasksWithPagination = async (currentPage: number) => {
     throw new Error("Error fetching tasks with pagination.");
   }
 };
+
+// Fetch all categories
+export const getCategories = async () => {
+  try {
+    const response = await axios.get("/api/categories");
+    return response.data; // Return the list of categories
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    throw error;
+  }
+};
+
+// Create a new category
+export const createCategory = async (name: string) => {
+  try {
+    const response = await axios.post("/api/categories", { name });
+    return response.data; // Return the newly created category
+  } catch (error) {
+    console.error("Error creating category:", error);
+    throw error;
+  }
+};

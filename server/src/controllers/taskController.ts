@@ -1,5 +1,6 @@
 import { Request, RequestHandler, Response } from "express";
 import Task from "../models/taskModel ";
+import Category from "../models/categoryModel";
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
@@ -14,12 +15,13 @@ export const getTasks = async (req: Request, res: Response) => {
 
 export const createTask = async (req: Request, res: Response) => {
   try {
-    const { name, content, startDate, endDate } = req.body;
+    const { name, content, startDate, endDate, category } = req.body;
     const newTask = new Task({
       name,
       content,
       startDate,
       endDate,
+      category,
     });
     await newTask.save();
     res.status(200).json(newTask);
@@ -32,12 +34,12 @@ export const createTask = async (req: Request, res: Response) => {
 
 export const editTask = async (req: Request, res: Response) => {
   try {
-    const { name, content, startDate, endDate } = req.body;
+    const { name, content, startDate, endDate, category } = req.body;
     const taskId = req.params.id;
 
     const updatedTask = await Task.findByIdAndUpdate(
       taskId,
-      { name, content, startDate, endDate },
+      { name, content, startDate, endDate, category },
       { new: true }
     );
 
@@ -150,5 +152,32 @@ export const getTasksWithPagination = async (
   } catch (err) {
     console.error("Error fetching tasks with pagination:", err);
     res.status(500).json({ error: "Failed to fetch tasks" });
+  }
+};
+
+export const getCategories = async (req: Request, res: Response) => {
+  try {
+    const categories = await Category.find();
+    res.status(200).json(categories);
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching categories", error: err });
+  }
+};
+
+export const createCategory = async (req: Request, res: Response) => {
+  const { name } = req.body;
+
+  // Check if the category already exists
+  const existingCategory = await Category.findOne({ name });
+  if (existingCategory) {
+    res.status(400).json({ message: "Category already exists" });
+  }
+
+  try {
+    const newCategory = new Category({ name });
+    await newCategory.save();
+    res.status(201).json(newCategory); // Return the response with the new category
+  } catch (err) {
+    res.status(500).json({ message: "Failed to create category", error: err });
   }
 };
