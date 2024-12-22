@@ -22,11 +22,18 @@ export interface Task {
   startDate?: Date | string;
   endDate?: Date | string;
   status?: TaskStatus;
+  category?: string;
+}
+
+export interface Category {
+  _id: string;
+  categories: string[];
 }
 
 export enum MenuType {
   STATUS = "Status",
   DATE_RANGE = "Date range",
+  TASK_CATEGORY = "Task category",
 }
 
 export interface PaginationData {

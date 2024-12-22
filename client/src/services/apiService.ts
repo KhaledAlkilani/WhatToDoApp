@@ -139,7 +139,7 @@ export const getCategories = async () => {
 // Create a new category
 export const createCategory = async (name: string) => {
   try {
-    const response = await axios.post("/api/categories", { name });
+    const response = await axios.post("/api/new-category", { name });
     return response.data; // Return the newly created category
   } catch (error) {
     console.error("Error creating category:", error);

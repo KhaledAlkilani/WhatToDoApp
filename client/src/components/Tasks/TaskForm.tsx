@@ -1,10 +1,14 @@
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import {
+  Category,
+  MenuType,
   Task,
   TaskFormMode,
   TaskFormOnSubmitStatuses,
 } from "../../models/TaskModels";
 import { formatDateForInput } from "../../utils";
+import Menu from "./Menu";
+import { createCategory, getCategories } from "../../services/apiService";
 
 interface TaskFormProps {
   mode: TaskFormMode;
@@ -23,6 +27,25 @@ const TaskForm = ({
 }: TaskFormProps) => {
   const [statusMessage, setStatusMessage] =
     useState<TaskFormOnSubmitStatuses | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [newCategory, setNewCategory] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    task.category || ""
+  );
+
+  // Fetch categories from API
+  const fetchCategories = async () => {
+    try {
+      const data = await getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   const handleTaskNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTask({
@@ -31,13 +54,24 @@ const TaskForm = ({
     });
   };
 
-  const handleTaskContentChange = (
+  const handleTaskDescriptionChange = (
     e: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     setTask({
       ...task,
       content: e.target.value,
     });
+  };
+
+  const handleTaskCategoryChange = (category: string) => {
+    setTask({
+      ...task,
+      category: category,
+    });
+  };
+
+  const handleNewCategoryInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewCategory(e.target.value);
   };
 
   const handleTaskStartDateChange = (
@@ -74,6 +108,20 @@ const TaskForm = ({
         formatDateForInput(taskToEdit.endDate);
 
     return isChanged; // Return true if changes have been made
+  };
+
+  // Handle adding a new category by calling the createCategory function from apiService
+  const handleAddCategory = async () => {
+    if (newCategory.trim()) {
+      try {
+        const response = await createCategory(newCategory); // Call createCategory from apiService
+        setCategories((prev) => [...prev, response]); // Update categories list
+        setSelectedCategory(response._id); // Set the newly created category as selected
+        setNewCategory(""); // Reset new category input
+      } catch (error) {
+        console.error("Error adding category:", error);
+      }
+    }
   };
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -121,7 +169,7 @@ const TaskForm = ({
             htmlFor="taskName"
             className="block text-sm font-semibold mb-2"
           >
-            Task Name
+            Name
           </label>
           <input
             type="text"
@@ -137,14 +185,27 @@ const TaskForm = ({
             htmlFor="taskContent"
             className="block text-sm font-semibold mb-2"
           >
-            Task Content
+            Description
           </label>
           <textarea
             style={{ resize: "none", height: 80 }}
             id={`taskContent-${id}`}
             value={task.content}
-            onChange={handleTaskContentChange}
+            onChange={handleTaskDescriptionChange}
             className={"input input-bordered w-full"}
+          />
+        </div>
+
+        {/* Category Selector Menu */}
+        <div style={{ overflowY: "auto" }}>
+          <Menu
+          menuType={MenuType.TASK_CATEGORY}
+          categories={categories}
+          selectedCategory={selectedCategory}
+          newCategory={newCategory}
+          onCategoryChange={handleNewCategoryInputChange}
+          onCategorySelect={handleTaskCategoryChange}
+          onAddCategory={handleAddCategory}
           />
         </div>
 

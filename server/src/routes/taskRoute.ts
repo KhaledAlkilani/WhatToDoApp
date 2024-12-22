@@ -7,8 +7,6 @@ import {
   getTasks,
   searchTasksByName,
   getTasksWithPagination,
-  getCategories,
-  createCategory,
 } from "../controllers/taskController";
 
 const taskRoute = Router();
@@ -27,8 +25,5 @@ taskRoute.get("/tasks/date-range", getTasksByDateRange);
 
 taskRoute.get("/tasks/pagination", getTasksWithPagination);
 
-taskRoute.get("/categories", getCategories);
-
-taskRoute.post("/categories", createCategory);
 
 export default taskRoute;

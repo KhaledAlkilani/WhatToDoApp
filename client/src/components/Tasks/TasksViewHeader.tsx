@@ -81,7 +81,7 @@ const TasksViewHeader = ({
           <input
             type="text"
             id={`searchField-${id}`}
-            placeholder="Search tasks by name"
+            placeholder="Search task by name"
             value={searchTaskName}
             onChange={(e) => onSearchTaskName(e.target.value)}
             className="input input-bordered w-full md:w-80"

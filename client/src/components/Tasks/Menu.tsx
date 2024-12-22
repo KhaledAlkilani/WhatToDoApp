@@ -11,15 +11,27 @@ interface MenuProps {
   onSetTask?: (value: Task) => void;
   tasksList?: Task[];
   onApplyDateRange?: () => Promise<void>;
+  categories?: { _id: string; categories: string[] }[];
+  newCategory?: string;
+  onCategoryChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAddCategory?: () => Promise<void>;
+  selectedCategory?: string | null;
+  onCategorySelect?: (category: string) => void;
 }
 
 const Menu = ({
   menuType,
   task,
-  onSetTask,
   selectedStatus,
+  categories,
+  newCategory,
+  selectedCategory,
+  onSetTask,
   onSelectStatus,
   onApplyDateRange,
+  onCategoryChange,
+  onAddCategory,
+  onCategorySelect,
 }: MenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
@@ -154,6 +166,57 @@ const Menu = ({
                   </button>
                 </div>
               </>
+            )}
+
+            {isMenuOpen && (
+              <div className="absolute right-0 mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <div className="py-1">
+                  {menuType === MenuType.TASK_CATEGORY && (
+                    <>
+                      <input
+                        type="text"
+                        value={newCategory}
+                        onChange={onCategoryChange}
+                        placeholder="Type category name"
+                        className="input input-bordered w-full mb-2 px-2 py-1"
+                      />
+
+                      {/* Display Existing Categories */}
+                      <div>
+                        {categories &&
+                          categories
+                            .filter((category) =>
+                              category.categories.some((cat) =>
+                                cat
+                                  .toLowerCase()
+                                  .includes(newCategory?.toLowerCase() || "")
+                              )
+                            )
+                            .map((category) => (
+                              <div
+                                key={category._id}
+                                // onClick={() => onCategoryChange?.(category._id)}
+                                className="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded"
+                              >
+                                {category.categories.join(", ")}
+                              </div>
+                            ))}
+                      </div>
+
+                      {newCategory?.trim() && (
+                        <div>
+                          <button
+                            onClick={onAddCategory}
+                            className="btn btn-sm btn-primary mt-2 w-full"
+                          >
+                            Add New Category
+                          </button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
             )}
           </div>
         </div>

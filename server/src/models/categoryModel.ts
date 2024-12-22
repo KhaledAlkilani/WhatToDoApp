@@ -2,13 +2,13 @@ import mongoose, { Schema, Document } from "mongoose";
 
 // Category document
 interface Category extends Document {
-  name: string;
+  categoryName: string;
 }
 
 // Category schema
 const categorySchema: Schema = new Schema(
   {
-    name: {
+    categoryName: {
       type: String,
       required: true,
       unique: true, // Ensure categories are unique

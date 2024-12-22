@@ -13,6 +13,7 @@ interface Task extends Document {
   startDate?: Date;
   endDate?: Date;
   status: TaskStatus;
+  category: mongoose.Types.ObjectId;
 }
 
 // Task schema
@@ -36,12 +37,7 @@ const taskSchema: Schema = new Schema(
     },
     status: {
       type: String,
-      enum: [
-        TaskStatus.NEW,
-        TaskStatus.IN_PROGRESS,
-        TaskStatus.DONE,
-        TaskStatus.NEW,
-      ],
+      enum: [TaskStatus.NEW, TaskStatus.IN_PROGRESS, TaskStatus.DONE],
       default: TaskStatus.NEW,
     },
     category: {

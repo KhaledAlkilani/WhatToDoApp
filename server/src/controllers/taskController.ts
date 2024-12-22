@@ -1,4 +1,4 @@
-import { Request, RequestHandler, Response } from "express";
+import { Request, Response } from "express";
 import Task from "../models/taskModel ";
 import Category from "../models/categoryModel";
 
@@ -14,15 +14,25 @@ export const getTasks = async (req: Request, res: Response) => {
 };
 
 export const createTask = async (req: Request, res: Response) => {
+  const { name, content, startDate, endDate, categoryName } = req.body;
   try {
-    const { name, content, startDate, endDate, category } = req.body;
+    // Find the category now that it's created or fetched
+    let category = await Category.findOne({ categoryName });
+
+    if (!category) {
+      // If the category doesn't exist, create a new category
+      category = new Category({ categoryName });
+      await category.save(); // Save the new category to the database
+    }
+
     const newTask = new Task({
       name,
       content,
       startDate,
       endDate,
-      category,
+      category: category._id,
     });
+
     await newTask.save();
     res.status(200).json(newTask);
   } catch (err: any) {
@@ -33,13 +43,21 @@ export const createTask = async (req: Request, res: Response) => {
 };
 
 export const editTask = async (req: Request, res: Response) => {
+  const { name, content, startDate, endDate, categoryName } = req.body;
+  const taskId = req.params.id;
   try {
-    const { name, content, startDate, endDate, category } = req.body;
-    const taskId = req.params.id;
+    // Find the category (create it if it doesn't exist)
+    let category = await Category.findOne({ categoryName });
+
+    if (!category) {
+      // If the category doesn't exist, create a new category
+      category = new Category({ categoryName });
+      await category.save(); // Save the new category to the database
+    }
 
     const updatedTask = await Task.findByIdAndUpdate(
       taskId,
-      { name, content, startDate, endDate, category },
+      { name, content, startDate, endDate, category: category._id },
       { new: true }
     );
 
@@ -152,32 +170,5 @@ export const getTasksWithPagination = async (
   } catch (err) {
     console.error("Error fetching tasks with pagination:", err);
     res.status(500).json({ error: "Failed to fetch tasks" });
-  }
-};
-
-export const getCategories = async (req: Request, res: Response) => {
-  try {
-    const categories = await Category.find();
-    res.status(200).json(categories);
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching categories", error: err });
-  }
-};
-
-export const createCategory = async (req: Request, res: Response) => {
-  const { name } = req.body;
-
-  // Check if the category already exists
-  const existingCategory = await Category.findOne({ name });
-  if (existingCategory) {
-    res.status(400).json({ message: "Category already exists" });
-  }
-
-  try {
-    const newCategory = new Category({ name });
-    await newCategory.save();
-    res.status(201).json(newCategory); // Return the response with the new category
-  } catch (err) {
-    res.status(500).json({ message: "Failed to create category", error: err });
   }
 };
