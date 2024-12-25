@@ -55,7 +55,7 @@ export async function editTask(
     content: string;
     startDate: Date;
     endDate: Date;
-    categoryName: { _id: string; categoryName: string };
+    categoryName: string;
   }
 ) {
   try {

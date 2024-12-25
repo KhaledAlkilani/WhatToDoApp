@@ -24,7 +24,7 @@ export interface Task {
   startDate?: Date | string;
   endDate?: Date | string;
   status?: TaskStatus;
-  category?: Category;
+  category: Category;
 }
 
 export enum MenuType {

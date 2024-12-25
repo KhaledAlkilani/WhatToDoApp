@@ -25,5 +25,4 @@ taskRoute.get("/tasks/date-range", getTasksByDateRange);
 
 taskRoute.get("/tasks/pagination", getTasksWithPagination);
 
-
 export default taskRoute;

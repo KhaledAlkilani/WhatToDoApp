@@ -1,10 +1,19 @@
 import { Request, Response } from "express";
 import Task from "../models/taskModel ";
-import Category from "../models/categoryModel";
+import Category, { TaskPopulationFields } from "../models/categoryModel";
+
+export const TaskCategoryPopulateSelect = {
+  CATEGORY: {
+    path: TaskPopulationFields.CATEGORY,
+    select: `${TaskPopulationFields.CATEGORY_ID} ${TaskPopulationFields.CATEGORY_NAME}`,
+  },
+} as const;
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
-    const tasks = await Task.find().populate("category", "categoryName");
+    const tasks = await Task.find().populate(
+      TaskCategoryPopulateSelect.CATEGORY
+    );
     res.status(200).json(tasks);
   } catch (err: any) {
     res
@@ -35,8 +44,7 @@ export const createTask = async (req: Request, res: Response) => {
 
     const savedTask = await newTask.save();
     const populatedTask = await Task.findById(savedTask._id).populate(
-      "category",
-      "categoryName"
+      TaskCategoryPopulateSelect.CATEGORY
     );
     res.status(200).json(populatedTask);
   } catch (err: any) {
@@ -49,6 +57,7 @@ export const createTask = async (req: Request, res: Response) => {
 export const editTask = async (req: Request, res: Response) => {
   const { name, content, startDate, endDate, categoryName } = req.body;
   const taskId = req.params.id;
+
   try {
     // Find the category (create it if it doesn't exist)
     let category = await Category.findOne({ categoryName });
@@ -56,29 +65,26 @@ export const editTask = async (req: Request, res: Response) => {
     if (!category) {
       // If the category doesn't exist, create a new category
       category = new Category({ categoryName });
-      await category.save(); // Save the new category to the database
+      await category.save();
     }
 
+    // Update and populate in one operation
     const updatedTask = await Task.findByIdAndUpdate(
       taskId,
       { name, content, startDate, endDate, category: category._id },
       { new: true }
-    );
-    const populatedUpdated = await Task.findById(updatedTask?._id).populate(
-      "category",
-      "categoryName"
-    );
+    ).populate(TaskCategoryPopulateSelect.CATEGORY);
 
     if (!updatedTask) {
       res.status(404).json({ message: "Task not found" });
-      return;
     }
 
-    res.status(200).json(populatedUpdated);
+    res.status(200).json(updatedTask);
   } catch (err: any) {
-    res
-      .status(500)
-      .json({ message: "failed to edit task", error: err.message });
+    res.status(500).json({
+      message: "Failed to edit task",
+      error: err.message,
+    });
   }
 };
 
@@ -162,7 +168,11 @@ export const getTasksWithPagination = async (
     const limit = parseInt(req.query.limit as string) || 20;
     const skip = (page - 1) * limit;
 
-    const tasks = await Task.find().skip(skip).limit(limit);
+    const tasks = await Task.find()
+      .populate("category", "categoryName")
+      .skip(skip)
+      .limit(limit);
+
     const totalCount = await Task.countDocuments();
     const totalPages = Math.ceil(totalCount / limit);
 

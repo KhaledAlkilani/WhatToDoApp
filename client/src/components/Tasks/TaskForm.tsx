@@ -68,10 +68,10 @@ const TaskForm = ({
     }));
   };
 
-  const handleCategorySelect = (category: Category | null) => {
+  const handleCategorySelect = (category: Category) => {
     setTask((prevTask) => ({
       ...prevTask,
-      category: category || undefined,
+      category: category,
     }));
   };
 

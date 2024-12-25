@@ -14,7 +14,7 @@ interface MenuProps {
   onSelectStatus?: (status: TaskStatus | null) => void;
   onSetTask?: (value: Task) => void;
   onApplyDateRange?: () => Promise<void>;
-  onCategorySelect?: (category: Category | null) => void;
+  onCategorySelect?: (category: Category) => void;
   onCategoryChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -140,7 +140,7 @@ const Menu = ({
               alt="close icon"
               width={12}
               onClick={() => {
-                onCategorySelect?.(null);
+                onCategorySelect?.({ _id: "", categoryName: "" });
               }}
               className="mr-2 cursor-pointer"
             />

@@ -1,5 +1,11 @@
 import mongoose, { Schema, Document } from "mongoose";
 
+export enum TaskPopulationFields {
+  CATEGORY = "category",
+  CATEGORY_NAME = "categoryName",
+  CATEGORY_ID = "_id",
+}
+
 // Category document
 interface Category extends Document {
   categoryName: string;

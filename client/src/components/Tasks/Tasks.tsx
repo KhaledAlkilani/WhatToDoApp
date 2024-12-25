@@ -148,17 +148,13 @@ const Tasks = () => {
     // Destructure newTask to get properties
     const { _id, name, content, startDate, endDate, category } = task;
 
-    const categoryData = category
-      ? { _id: category._id, categoryName: category.categoryName }
-      : { _id: "", categoryName: "" };
-
     const existingTaskToEdit = {
       _id,
       name,
       content,
       startDate: startDate ? new Date(startDate) : new Date(),
       endDate: endDate ? new Date(endDate) : new Date(),
-      categoryName: categoryData,
+      categoryName: category.categoryName,
     };
 
     setLoading?.(true);
