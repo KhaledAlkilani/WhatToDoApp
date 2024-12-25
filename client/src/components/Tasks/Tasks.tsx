@@ -22,6 +22,7 @@ const initialData: Task = {
   content: "",
   startDate: new Date(),
   endDate: new Date(),
+  category: { _id: "", categoryName: "" },
 };
 
 const Tasks = () => {
@@ -145,7 +146,11 @@ const Tasks = () => {
     e.preventDefault();
 
     // Destructure newTask to get properties
-    const { _id, name, content, startDate, endDate } = task;
+    const { _id, name, content, startDate, endDate, category } = task;
+
+    const categoryData = category
+      ? { _id: category._id, categoryName: category.categoryName }
+      : { _id: "", categoryName: "" };
 
     const existingTaskToEdit = {
       _id,
@@ -153,6 +158,7 @@ const Tasks = () => {
       content,
       startDate: startDate ? new Date(startDate) : new Date(),
       endDate: endDate ? new Date(endDate) : new Date(),
+      categoryName: categoryData,
     };
 
     setLoading?.(true);
@@ -200,7 +206,6 @@ const Tasks = () => {
         searchTaskName={searchTaskName}
         selectedStatus={selectedStatus}
         task={task}
-        tasksList={tasksList}
         onSetTask={setTask}
         onTasksList={setTasksList}
         onSearchTaskName={setSearchTaskName}

@@ -55,7 +55,7 @@ const TasksList = ({
             {tasksToRender.map((task) => (
               <div
                 key={task._id}
-                className="w-full sm:w-[14rem] md:w-[16rem] lg:w-[15rem] border border-black rounded-lg p-4 flex flex-col h-auto"
+                className="w-full sm:w-[14rem] md:w-[16rem] lg:w-[14rem] border border-black rounded-lg p-4 flex flex-col h-auto"
               >
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center space-x-2">

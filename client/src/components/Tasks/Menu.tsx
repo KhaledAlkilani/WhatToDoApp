@@ -2,36 +2,34 @@ import { useState } from "react";
 import { MenuType, Task, TaskStatus } from "../../models/TaskModels";
 import closeIcon from "../../assets/close-icon.svg";
 import downArrow from "../../assets/arrow-down.svg";
+import { Category } from "../../models/CategoryModel";
 
 interface MenuProps {
   menuType: MenuType;
-  selectedStatus?: string | null;
-  onSelectStatus?: (status: TaskStatus | null) => void;
+  selectedStatus?: string;
   task?: Task;
+  selectedCategory?: Category;
+  categories?: Category[];
+  styles?: string;
+  onSelectStatus?: (status: TaskStatus | null) => void;
   onSetTask?: (value: Task) => void;
-  tasksList?: Task[];
   onApplyDateRange?: () => Promise<void>;
-  categories?: { _id: string; categories: string[] }[];
-  newCategory?: string;
+  onCategorySelect?: (category: Category | null) => void;
   onCategoryChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onAddCategory?: () => Promise<void>;
-  selectedCategory?: string | null;
-  onCategorySelect?: (category: string) => void;
 }
 
 const Menu = ({
   menuType,
-  task,
   selectedStatus,
-  categories,
-  newCategory,
+  task,
   selectedCategory,
+  categories,
+  styles = "",
+  onCategorySelect,
+  onCategoryChange,
   onSetTask,
   onSelectStatus,
   onApplyDateRange,
-  onCategoryChange,
-  onAddCategory,
-  onCategorySelect,
 }: MenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
@@ -69,16 +67,42 @@ const Menu = ({
     setIsMenuOpen(false);
   };
 
+  const handleCategoryClick = (category: Category) => {
+    onCategorySelect?.(category);
+    setIsMenuOpen(false);
+  };
+
+  // Retrieve the typed value from the selectedCategory (if any), and normalize it by trimming spaces and converting to lowercase
+  const typedValue = (task?.category?.categoryName ?? "").trim().toLowerCase();
+
+  // Start with the full list of categories (or an empty array if categories are not provided)
+  let displayedCategories = categories || [];
+
+  // Check if the user has typed anything in the input field (non-empty typedValue)
+  if (typedValue.length > 0) {
+    // 1) Filter the categories by the user's typed input (matching category names)
+    displayedCategories = displayedCategories.filter(
+      (cat) => cat.categoryName.toLowerCase().includes(typedValue) // Check if categoryName contains the typed input (case-insensitive)
+    );
+
+    // 2) Exclude the selected category from the list to prevent it from showing again after selection
+    if (selectedCategory?._id) {
+      displayedCategories = (categories || []).filter(
+        (cat) => cat._id !== selectedCategory._id // Exclude the category with the same ID as the selectedCategory
+      );
+    }
+  }
+
   return (
-    <div className="relative inline-block">
+    <div className={`relative inline-block ${styles}`}>
       {/* Toggle Button */}
       <div
-        className="flex items-center w-60 rounded-md border border-black bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100"
+        className={`flex items-center ${styles} rounded-md border border-black bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100`}
         onClick={toggleMenu}
       >
         {menuType === MenuType.DATE_RANGE && (
           <div className="flex flex-1">
-            <span>{"Select date range"}</span>
+            <span>Select date range</span>
           </div>
         )}
         {menuType === MenuType.STATUS && (
@@ -91,13 +115,47 @@ const Menu = ({
               alt="close icon"
               width={12}
               onClick={() => {
-                handleSelectStatus?.(null), toggleMenu;
+                handleSelectStatus?.(null);
               }}
               className="mr-2 cursor-pointer"
             />
           </>
         )}
-        <img src={downArrow} alt="arrow" width={12} />
+
+        {menuType === MenuType.TASK_CATEGORY && (
+          <>
+            <div className="flex flex-1">
+              <span
+                className={
+                  selectedCategory?.categoryName
+                    ? "text-black-900"
+                    : "text-gray-500"
+                }
+              >
+                {selectedCategory?.categoryName || "Add new or select existing"}
+              </span>
+            </div>
+            <img
+              src={closeIcon}
+              alt="close icon"
+              width={12}
+              onClick={() => {
+                onCategorySelect?.(null);
+              }}
+              className="mr-2 cursor-pointer"
+            />
+          </>
+        )}
+
+        <img
+          src={downArrow}
+          alt="arrow"
+          width={12}
+          style={{
+            transition: "transform 0.3s ease",
+            transform: isMenuOpen ? "rotate(0deg)" : "rotate(180deg)",
+          }}
+        />
       </div>
 
       {/* Menu Content */}
@@ -160,7 +218,7 @@ const Menu = ({
                 <div className="px-4 py-2 text-sm">
                   <button
                     onClick={handleSelectDateRange}
-                    className="bg-indigo-500 text-white px-4 py-2 rounded-md"
+                    className="btn btn-primary text-white px-4 py-2 rounded-md"
                   >
                     Apply
                   </button>
@@ -168,54 +226,36 @@ const Menu = ({
               </>
             )}
 
-            {isMenuOpen && (
-              <div className="absolute right-0 mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <div className="py-1">
-                  {menuType === MenuType.TASK_CATEGORY && (
-                    <>
-                      <input
-                        type="text"
-                        value={newCategory}
-                        onChange={onCategoryChange}
-                        placeholder="Type category name"
-                        className="input input-bordered w-full mb-2 px-2 py-1"
-                      />
+            {menuType === MenuType.TASK_CATEGORY && (
+              <div className="m-2">
+                {/* The user types directly into task.category.categoryName */}
+                <input
+                  type="text"
+                  value={task?.category?.categoryName || ""}
+                  onChange={
+                    onCategoryChange
+                  } /* parent updates task.categoryName */
+                  placeholder="Type category name"
+                  className="input input-bordered w-full mb-2"
+                />
 
-                      {/* Display Existing Categories */}
-                      <div>
-                        {categories &&
-                          categories
-                            .filter((category) =>
-                              category.categories.some((cat) =>
-                                cat
-                                  .toLowerCase()
-                                  .includes(newCategory?.toLowerCase() || "")
-                              )
-                            )
-                            .map((category) => (
-                              <div
-                                key={category._id}
-                                // onClick={() => onCategoryChange?.(category._id)}
-                                className="cursor-pointer hover:bg-gray-100 px-2 py-1 rounded"
-                              >
-                                {category.categories.join(", ")}
-                              </div>
-                            ))}
-                      </div>
-
-                      {newCategory?.trim() && (
-                        <div>
-                          <button
-                            onClick={onAddCategory}
-                            className="btn btn-sm btn-primary mt-2 w-full"
-                          >
-                            Add New Category
-                          </button>
-                        </div>
-                      )}
-                    </>
+                <ul className="border p-2 rounded shadow bg-white max-h-60 overflow-auto">
+                  {displayedCategories.length ? (
+                    displayedCategories.map((category) => (
+                      <li
+                        key={category._id}
+                        className="cursor-pointer hover:bg-gray-200 px-2 py-1"
+                        onClick={() => handleCategoryClick(category)}
+                      >
+                        {category.categoryName}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="px-2 py-1 text-gray-500">
+                      Category not exist, add new
+                    </li>
                   )}
-                </div>
+                </ul>
               </div>
             )}
           </div>

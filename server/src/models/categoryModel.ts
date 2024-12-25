@@ -11,7 +11,7 @@ const categorySchema: Schema = new Schema(
     categoryName: {
       type: String,
       required: true,
-      unique: true, // Ensure categories are unique
+      unique: true,
     },
   },
   {

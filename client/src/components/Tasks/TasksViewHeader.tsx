@@ -10,7 +10,6 @@ import { getTasksByDateRange } from "../../services/apiService";
 
 interface TasksViewHeaderProps {
   searchTaskName: string;
-  tasksList: Task[];
   task: Task;
   selectedStatus: TaskStatus | null;
   onSearchTaskName: (value: string) => void;
@@ -22,7 +21,6 @@ interface TasksViewHeaderProps {
 
 const TasksViewHeader = ({
   searchTaskName,
-  tasksList,
   task,
   selectedStatus,
   onSearchTaskName,
@@ -92,16 +90,17 @@ const TasksViewHeader = ({
           <Menu
             menuType={MenuType.DATE_RANGE}
             onApplyDateRange={handleApplyDateRange}
-            tasksList={tasksList}
             task={task}
             onSetTask={onSetTask}
+            styles="w-60"
           />
           <Menu
             menuType={MenuType.STATUS}
             onSelectStatus={(status: TaskStatus | null) =>
               onSelectedStatus(status)
             }
-            selectedStatus={selectedStatus}
+            selectedStatus={selectedStatus || ""}
+            styles="w-60"
           />
         </div>
       </div>

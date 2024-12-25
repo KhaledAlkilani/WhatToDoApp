@@ -1,3 +1,5 @@
+import { Category } from "./CategoryModel";
+
 export enum TaskStatus {
   NEW = "New",
   IN_PROGRESS = "In-Progress",
@@ -22,12 +24,7 @@ export interface Task {
   startDate?: Date | string;
   endDate?: Date | string;
   status?: TaskStatus;
-  category?: string;
-}
-
-export interface Category {
-  _id: string;
-  categories: string[];
+  category?: Category;
 }
 
 export enum MenuType {

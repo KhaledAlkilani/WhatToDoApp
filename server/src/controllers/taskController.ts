@@ -4,7 +4,7 @@ import Category from "../models/categoryModel";
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
-    const tasks = await Task.find();
+    const tasks = await Task.find().populate("category", "categoryName");
     res.status(200).json(tasks);
   } catch (err: any) {
     res
@@ -33,8 +33,12 @@ export const createTask = async (req: Request, res: Response) => {
       category: category._id,
     });
 
-    await newTask.save();
-    res.status(200).json(newTask);
+    const savedTask = await newTask.save();
+    const populatedTask = await Task.findById(savedTask._id).populate(
+      "category",
+      "categoryName"
+    );
+    res.status(200).json(populatedTask);
   } catch (err: any) {
     res
       .status(500)
@@ -60,13 +64,17 @@ export const editTask = async (req: Request, res: Response) => {
       { name, content, startDate, endDate, category: category._id },
       { new: true }
     );
+    const populatedUpdated = await Task.findById(updatedTask?._id).populate(
+      "category",
+      "categoryName"
+    );
 
     if (!updatedTask) {
       res.status(404).json({ message: "Task not found" });
       return;
     }
 
-    res.status(200).json(updatedTask);
+    res.status(200).json(populatedUpdated);
   } catch (err: any) {
     res
       .status(500)

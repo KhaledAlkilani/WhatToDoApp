@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { Task } from "../models/TaskModels";
+import { Category } from "../models/CategoryModel";
 
 const apiClient = axios.create({
   baseURL: "http://localhost:5000/api",
@@ -18,13 +19,15 @@ export async function getTasks() {
 
 export async function createTask(task: Task) {
   try {
-    const newTask: Task = {
-      _id: task._id,
+    const newTask = {
       name: task.name,
       content: task.content,
       startDate: task.startDate,
       endDate: task.endDate,
+      categoryName: task.category?.categoryName,
     };
+
+    console.log("Payload sent to backend:", newTask);
 
     const config: AxiosRequestConfig = {
       headers: {
@@ -40,6 +43,7 @@ export async function createTask(task: Task) {
     return response.data;
   } catch (error) {
     const err = error as AxiosError;
+    console.error(err);
     throw new Error(`Error creating a task. ${err.response?.data}`);
   }
 }
@@ -51,6 +55,7 @@ export async function editTask(
     content: string;
     startDate: Date;
     endDate: Date;
+    categoryName: { _id: string; categoryName: string };
   }
 ) {
   try {
@@ -126,23 +131,16 @@ export const getTasksWithPagination = async (currentPage: number) => {
 };
 
 // Fetch all categories
-export const getCategories = async () => {
+export async function getCategories(): Promise<Category[]> {
   try {
-    const response = await axios.get("/api/categories");
-    return response.data; // Return the list of categories
+    const response: AxiosResponse<Category[]> = await apiClient.get(
+      "/categories"
+    );
+    return response.data;
   } catch (error) {
-    console.error("Error fetching categories:", error);
-    throw error;
+    const err = error as AxiosError;
+    throw new Error(
+      `Failed to fetch categories: ${err.response?.data || err.message}`
+    );
   }
-};
-
-// Create a new category
-export const createCategory = async (name: string) => {
-  try {
-    const response = await axios.post("/api/new-category", { name });
-    return response.data; // Return the newly created category
-  } catch (error) {
-    console.error("Error creating category:", error);
-    throw error;
-  }
-};
+}

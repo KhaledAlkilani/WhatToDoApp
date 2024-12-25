@@ -1,14 +1,14 @@
 import { useEffect, useId, useState } from "react";
 import {
-  Category,
   MenuType,
   Task,
   TaskFormMode,
   TaskFormOnSubmitStatuses,
 } from "../../models/TaskModels";
 import { formatDateForInput } from "../../utils";
+import { getCategories } from "../../services/apiService";
+import { Category } from "../../models/CategoryModel";
 import Menu from "./Menu";
-import { createCategory, getCategories } from "../../services/apiService";
 
 interface TaskFormProps {
   mode: TaskFormMode;
@@ -28,23 +28,17 @@ const TaskForm = ({
   const [statusMessage, setStatusMessage] =
     useState<TaskFormOnSubmitStatuses | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [newCategory, setNewCategory] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(
-    task.category || ""
-  );
 
-  // Fetch categories from API
-  const fetchCategories = async () => {
-    try {
-      const data = await getCategories();
-      setCategories(data);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-    }
-  };
+  const id = useId();
 
   useEffect(() => {
-    fetchCategories();
+    getCategories()
+      .then((data) => {
+        setCategories(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, []);
 
   const handleTaskNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,15 +57,22 @@ const TaskForm = ({
     });
   };
 
-  const handleTaskCategoryChange = (category: string) => {
-    setTask({
-      ...task,
-      category: category,
-    });
+  const handleTaskCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTask((prev) => ({
+      ...prev,
+      category: {
+        ...prev.category,
+        categoryName: e.target.value,
+        _id: prev.category?._id || "",
+      },
+    }));
   };
 
-  const handleNewCategoryInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewCategory(e.target.value);
+  const handleCategorySelect = (category: Category | null) => {
+    setTask((prevTask) => ({
+      ...prevTask,
+      category: category || undefined,
+    }));
   };
 
   const handleTaskStartDateChange = (
@@ -91,7 +92,10 @@ const TaskForm = ({
   };
 
   const checkFieldsValidation = (): boolean => {
-    const isValid = task.name.trim() !== "" && task.content.trim() !== "";
+    const isValid =
+      task.name.trim() !== "" &&
+      task.content.trim() !== "" &&
+      task.category?.categoryName.trim() !== "";
     return !isValid;
   };
 
@@ -102,26 +106,13 @@ const TaskForm = ({
     const isChanged =
       task.name.trim() !== taskToEdit.name.trim() ||
       task.content.trim() !== taskToEdit.content.trim() ||
+      task.category?.categoryName !== taskToEdit.category?.categoryName ||
       formatDateForInput(task.startDate) !==
         formatDateForInput(taskToEdit.startDate) ||
       formatDateForInput(task.endDate) !==
         formatDateForInput(taskToEdit.endDate);
 
     return isChanged; // Return true if changes have been made
-  };
-
-  // Handle adding a new category by calling the createCategory function from apiService
-  const handleAddCategory = async () => {
-    if (newCategory.trim()) {
-      try {
-        const response = await createCategory(newCategory); // Call createCategory from apiService
-        setCategories((prev) => [...prev, response]); // Update categories list
-        setSelectedCategory(response._id); // Set the newly created category as selected
-        setNewCategory(""); // Reset new category input
-      } catch (error) {
-        console.error("Error adding category:", error);
-      }
-    }
   };
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -156,8 +147,6 @@ const TaskForm = ({
     }
   };
 
-  const id = useId();
-
   return (
     <div className="w-full max-w-lg mx-auto">
       <form
@@ -169,7 +158,7 @@ const TaskForm = ({
             htmlFor="taskName"
             className="block text-sm font-semibold mb-2"
           >
-            Name
+            Name *
           </label>
           <input
             type="text"
@@ -177,6 +166,7 @@ const TaskForm = ({
             value={task.name}
             onChange={handleTaskNameChange}
             className={"input input-bordered w-full"}
+            placeholder="Type task name"
           />
         </div>
 
@@ -185,7 +175,7 @@ const TaskForm = ({
             htmlFor="taskContent"
             className="block text-sm font-semibold mb-2"
           >
-            Description
+            Description *
           </label>
           <textarea
             style={{ resize: "none", height: 80 }}
@@ -193,19 +183,25 @@ const TaskForm = ({
             value={task.content}
             onChange={handleTaskDescriptionChange}
             className={"input input-bordered w-full"}
+            placeholder="Type task description"
           />
         </div>
 
-        {/* Category Selector Menu */}
-        <div style={{ overflowY: "auto" }}>
+        <div>
+          <label
+            htmlFor="taskName"
+            className="block text-sm font-semibold mb-2"
+          >
+            Category *
+          </label>
           <Menu
-          menuType={MenuType.TASK_CATEGORY}
-          categories={categories}
-          selectedCategory={selectedCategory}
-          newCategory={newCategory}
-          onCategoryChange={handleNewCategoryInputChange}
-          onCategorySelect={handleTaskCategoryChange}
-          onAddCategory={handleAddCategory}
+            menuType={MenuType.TASK_CATEGORY}
+            categories={categories}
+            task={task}
+            selectedCategory={task.category}
+            onCategorySelect={handleCategorySelect}
+            onCategoryChange={handleTaskCategoryChange}
+            styles="w-full h-11"
           />
         </div>
 
@@ -241,7 +237,7 @@ const TaskForm = ({
         {/* Status Message */}
         {statusMessage === TaskFormOnSubmitStatuses.FILLINFIELDS && (
           <div className="text-pastelWarning text-sm mt-2">
-            Please fill in the fields.
+            Please fill in the required fields.
           </div>
         )}
 
