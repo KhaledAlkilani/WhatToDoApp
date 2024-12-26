@@ -92,16 +92,18 @@ const TasksViewHeader = ({
             onApplyDateRange={handleApplyDateRange}
             task={task}
             onSetTask={onSetTask}
-            styles="w-60"
+            styles="w-full md:w-60 lg:w-60"
           />
-          <Menu
-            menuType={MenuType.STATUS}
-            onSelectStatus={(status: TaskStatus | null) =>
-              onSelectedStatus(status)
-            }
-            selectedStatus={selectedStatus || ""}
-            styles="w-60"
-          />
+          <div className="w-full md:w-auto">
+            <Menu
+              menuType={MenuType.STATUS}
+              onSelectStatus={(status: TaskStatus | null) =>
+                onSelectedStatus(status)
+              }
+              selectedStatus={selectedStatus || ""}
+              styles="w-full md:w-60 lg:w-60"
+            />
+          </div>
         </div>
       </div>
     </div>
