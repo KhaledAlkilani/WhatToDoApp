@@ -34,7 +34,6 @@ const Menu = ({
   onFetchPagedTasks,
 }: MenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-  // test new repo
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
