@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: sans-serif;
+}
+
+.scrollbar-custom {
+  scrollbar-width: thin;
+  scrollbar-color: blue #f1f1f1;
+}

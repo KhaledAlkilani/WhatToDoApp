@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # WhatToDo projekti
 
 # Tehtävät / ominaisuudet
@@ -59,3 +60,7 @@
   - Haku tulisi näkyä käyttöliittymässä (esimerkiksi tekstikentän kautta).
   - Toteuta tarvittavat turvamekanismit, kuten syötteen validointi ja SQL-injektioita vastaan.
   - Hakutoiminto sopii yhteen filteröinnin ja järjestämisen kanssa.
+=======
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/4SCKkSTR)
+Tämä on projektipohja jota voit hyödyntää oppimistehtävän teossa
+>>>>>>> 82b6d281fcdb1e16034e1e03593d1909aa4d876d
