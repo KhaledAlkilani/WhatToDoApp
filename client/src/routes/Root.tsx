@@ -13,7 +13,7 @@ const Root = () => {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="text-2xl focus:outline-none"
         >
-          &#9776; {/* Hamburger icon */}
+          &#9776;
         </button>
         <h1 className="text-lg font-bold">WhatToDoApp</h1>
       </div>
@@ -33,7 +33,7 @@ const Root = () => {
               onClick={() => setIsMenuOpen(false)}
               className="text-xl focus:outline-none"
             >
-              &#10005; {/* Close icon */}
+              &#10005;
             </button>
           </div>
 

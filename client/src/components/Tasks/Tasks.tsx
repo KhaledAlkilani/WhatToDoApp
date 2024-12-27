@@ -203,10 +203,11 @@ const Tasks = () => {
         selectedStatus={selectedStatus}
         task={task}
         onSetTask={setTask}
-        onTasksList={setTasksList}
+        onSetTasksList={setTasksList}
         onSearchTaskName={setSearchTaskName}
         onSelectedStatus={setSelectedStatus}
         onOpenTaskModal={openModal}
+        onFetchPagedTasks={fetchPagedTasks}
       />
       {isModalOpen && (
         <TaskModal

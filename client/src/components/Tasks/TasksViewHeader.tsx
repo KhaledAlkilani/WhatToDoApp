@@ -15,8 +15,9 @@ interface TasksViewHeaderProps {
   onSearchTaskName: (value: string) => void;
   onSetTask: (value: Task) => void;
   onSelectedStatus: (value: TaskStatus | null) => void;
-  onTasksList: (value: Task[]) => void;
+  onSetTasksList: (value: Task[]) => void;
   onOpenTaskModal: (mode: TaskFormMode, taskId?: string) => void;
+  onFetchPagedTasks?: (page: number) => Promise<void>;
 }
 
 const TasksViewHeader = ({
@@ -26,8 +27,9 @@ const TasksViewHeader = ({
   onSearchTaskName,
   onSetTask,
   onSelectedStatus,
-  onTasksList,
+  onSetTasksList,
   onOpenTaskModal,
+  onFetchPagedTasks,
 }: TasksViewHeaderProps) => {
   const handleApplyDateRange = async () => {
     if (!task.startDate || !task.endDate) {
@@ -47,7 +49,7 @@ const TasksViewHeader = ({
           : task.endDate.toLocaleString();
 
       const tasksInDateRange = await getTasksByDateRange(startDate, endDate);
-      onTasksList(tasksInDateRange);
+      onSetTasksList(tasksInDateRange);
     } catch (err) {
       console.error("Error fetching tasks in date range:", err);
     }
@@ -70,10 +72,7 @@ const TasksViewHeader = ({
       </div>
       <div className="flex flex-col md:flex-row px-4 md:px-10 md:items-end">
         <div className="flex-1 mb-4 md:mb-6">
-          <label
-            htmlFor="search"
-            className="block mb-2 text-center md:text-left"
-          >
+          <label htmlFor="search" className="block mb-2 text-left">
             Search
           </label>
           <input
@@ -90,20 +89,20 @@ const TasksViewHeader = ({
           <Menu
             menuType={MenuType.DATE_RANGE}
             onApplyDateRange={handleApplyDateRange}
+            onFetchPagedTasks={onFetchPagedTasks}
             task={task}
             onSetTask={onSetTask}
+            styles="w-full md:w-60 lg:w-60 z-30"
+          />
+
+          <Menu
+            menuType={MenuType.STATUS}
+            onSelectStatus={(status: TaskStatus | null) =>
+              onSelectedStatus(status)
+            }
+            selectedStatus={selectedStatus || ""}
             styles="w-full md:w-60 lg:w-60"
           />
-          <div className="w-full md:w-auto">
-            <Menu
-              menuType={MenuType.STATUS}
-              onSelectStatus={(status: TaskStatus | null) =>
-                onSelectedStatus(status)
-              }
-              selectedStatus={selectedStatus || ""}
-              styles="w-full md:w-60 lg:w-60"
-            />
-          </div>
         </div>
       </div>
     </div>

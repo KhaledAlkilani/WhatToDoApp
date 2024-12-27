@@ -48,7 +48,7 @@ const TasksList = ({
         </div>
       ) : (
         <div
-          style={{ height: "calc(100vh - 209px)" }}
+          style={{ height: "calc(100vh - 220px)" }}
           className="overflow-y-auto scrollbar-custom h-screen w-full relative"
         >
           <div className="flex flex-wrap sm:justify-start gap-6 p-[2rem]">

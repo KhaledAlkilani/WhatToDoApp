@@ -16,6 +16,7 @@ interface MenuProps {
   onApplyDateRange?: () => Promise<void>;
   onCategorySelect?: (category: Category) => void;
   onCategoryChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFetchPagedTasks?: (page: number) => Promise<void>;
 }
 
 const Menu = ({
@@ -30,6 +31,7 @@ const Menu = ({
   onSetTask,
   onSelectStatus,
   onApplyDateRange,
+  onFetchPagedTasks,
 }: MenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
@@ -64,7 +66,16 @@ const Menu = ({
 
   const handleSelectDateRange = () => {
     onApplyDateRange?.();
-    setIsMenuOpen(false);
+  };
+
+  const handleResetDateRange = async () => {
+    const resetTask: Task = {
+      ...task!,
+      startDate: Date(),
+      endDate: Date(),
+    };
+    onSetTask?.(resetTask);
+    await onFetchPagedTasks?.(1);
   };
 
   const handleCategoryClick = (category: Category) => {
@@ -102,7 +113,7 @@ const Menu = ({
       >
         {menuType === MenuType.DATE_RANGE && (
           <div className="flex flex-1">
-            <span>Select date range</span>
+            <span>{"Select date range"}</span>
           </div>
         )}
         {menuType === MenuType.STATUS && (
@@ -132,7 +143,8 @@ const Menu = ({
                     : "text-gray-500"
                 }
               >
-                {selectedCategory?.categoryName || "Add new or select existing"}
+                {(!isMenuOpen && selectedCategory?.categoryName) ||
+                  "Add new or select existing"}
               </span>
             </div>
             <img
@@ -215,12 +227,18 @@ const Menu = ({
                     className="input input-bordered w-full"
                   />
                 </div>
-                <div className="px-4 py-2 text-sm">
+                <div className="px-4 py-2 text-sm flex justify-between">
                   <button
                     onClick={handleSelectDateRange}
                     className="btn btn-primary text-white px-4 py-2 rounded-md"
                   >
                     Apply
+                  </button>
+                  <button
+                    onClick={handleResetDateRange}
+                    className="btn border-2 text-red-500 px-4 py-2 rounded-md"
+                  >
+                    Reset
                   </button>
                 </div>
               </>
