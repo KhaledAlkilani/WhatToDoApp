@@ -3,6 +3,9 @@ import { MenuType, Task, TaskStatus } from "../../models/TaskModels";
 import closeIcon from "../../assets/close-icon.svg";
 import downArrow from "../../assets/arrow-down.svg";
 import { Category } from "../../models/CategoryModel";
+import TaskCategoryAutoCompleteSelect from "./TaskCategoryAutoCompleteSelect";
+import TaskDateRangeSelect from "./TaskDateRangeSelect";
+import TaskStatusSelect from "./TaskStatusSelect";
 
 interface MenuProps {
   menuType: MenuType;
@@ -10,13 +13,17 @@ interface MenuProps {
   task?: Task;
   selectedCategory?: Category;
   categories?: Category[];
+  categoriesLoading?: boolean;
+  categoriesError?: string | null;
   styles?: string;
+  searchTaskName?: string;
   onSelectStatus?: (status: TaskStatus | null) => void;
   onSetTask?: (value: Task) => void;
   onApplyDateRange?: () => Promise<void>;
   onCategorySelect?: (category: Category) => void;
   onCategoryChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFetchPagedTasks?: (page: number) => Promise<void>;
+  onSearchTaskName?: (value: string) => void;
 }
 
 const Menu = ({
@@ -25,13 +32,17 @@ const Menu = ({
   task,
   selectedCategory,
   categories,
+  categoriesLoading,
+  categoriesError,
   styles = "",
+  searchTaskName,
   onCategorySelect,
   onCategoryChange,
   onSetTask,
   onSelectStatus,
   onApplyDateRange,
   onFetchPagedTasks,
+  onSearchTaskName,
 }: MenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 
@@ -78,7 +89,7 @@ const Menu = ({
     await onFetchPagedTasks?.(1);
   };
 
-  const handleCategoryClick = (category: Category) => {
+  const handleCategorySelect = (category: Category) => {
     onCategorySelect?.(category);
     setIsMenuOpen(false);
   };
@@ -113,7 +124,7 @@ const Menu = ({
       >
         {menuType === MenuType.DATE_RANGE && (
           <div className="flex flex-1">
-            <span>{"Select date range"}</span>
+            <span>Select date range</span>
           </div>
         )}
         {menuType === MenuType.STATUS && (
@@ -159,6 +170,32 @@ const Menu = ({
           </>
         )}
 
+        {menuType === MenuType.TASK_SEARCH && (
+          <>
+            <div className="flex flex-1">
+              <span
+                className={
+                  selectedCategory?.categoryName
+                    ? "text-black-900"
+                    : "text-gray-500"
+                }
+              >
+                {(!isMenuOpen && selectedCategory?.categoryName) ||
+                  "Search by name or category"}
+              </span>
+            </div>
+            <img
+              src={closeIcon}
+              alt="close icon"
+              width={12}
+              onClick={() => {
+                onCategorySelect?.({ _id: "", categoryName: "" });
+              }}
+              className="mr-2 cursor-pointer"
+            />
+          </>
+        )}
+
         <img
           src={downArrow}
           alt="arrow"
@@ -175,102 +212,64 @@ const Menu = ({
         <div className="absolute right-0 mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
           <div className="py-1">
             {menuType === MenuType.STATUS && (
-              <div className="py-1">
-                <a
-                  href="#"
-                  className="text-gray-700 block px-4 py-2 text-sm"
-                  onClick={() => handleSelectStatus(TaskStatus.NEW)}
-                >
-                  {TaskStatus.NEW}
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-700 block px-4 py-2 text-sm"
-                  onClick={() => handleSelectStatus(TaskStatus.IN_PROGRESS)}
-                >
-                  {TaskStatus.IN_PROGRESS}
-                </a>
-                <a
-                  href="#"
-                  className="text-gray-700 block px-4 py-2 text-sm"
-                  onClick={() => handleSelectStatus(TaskStatus.DONE)}
-                >
-                  {TaskStatus.DONE}
-                </a>
-              </div>
+              <TaskStatusSelect onSelectStatus={handleSelectStatus} />
             )}
             {menuType === MenuType.DATE_RANGE && (
-              <>
-                <div className="px-4 py-2 text-sm">
-                  <label className="block mb-2">Start Date</label>
-                  <input
-                    type="date"
-                    value={
-                      task?.startDate
-                        ? new Date(task.startDate).toISOString().split("T")[0]
-                        : ""
-                    }
-                    onChange={handleStartDateChange}
-                    className="input input-bordered w-full"
-                  />
-                </div>
-                <div className="px-4 py-2 text-sm">
-                  <label className="block mb-2">End Date</label>
-                  <input
-                    type="date"
-                    value={
-                      task?.endDate
-                        ? new Date(task.endDate).toISOString().split("T")[0]
-                        : ""
-                    }
-                    onChange={handleEndDateChange}
-                    className="input input-bordered w-full"
-                  />
-                </div>
-                <div className="px-4 py-2 text-sm flex justify-between">
-                  <button
-                    onClick={handleSelectDateRange}
-                    className="btn btn-primary text-white px-4 py-2 rounded-md"
-                  >
-                    Apply
-                  </button>
-                  <button
-                    onClick={handleResetDateRange}
-                    className="btn border-2 text-red-500 px-4 py-2 rounded-md"
-                  >
-                    Reset
-                  </button>
-                </div>
-              </>
+              <TaskDateRangeSelect
+                task={task}
+                onStartDateChange={handleStartDateChange}
+                onEndDateChange={handleEndDateChange}
+                onSelectDateRange={handleSelectDateRange}
+                onResetDateRange={handleResetDateRange}
+              />
             )}
 
             {menuType === MenuType.TASK_CATEGORY && (
+              <TaskCategoryAutoCompleteSelect
+                categoriesLoading={categoriesLoading}
+                categoriesError={categoriesError}
+                task={task}
+                displayedCategories={displayedCategories}
+                handleCategorySelect={handleCategorySelect}
+                onCategoryChange={onCategoryChange}
+              />
+            )}
+
+            {menuType === MenuType.TASK_SEARCH && (
               <div className="m-2">
                 {/* The user types directly into task.category.categoryName */}
                 <input
                   type="text"
-                  value={task?.category?.categoryName || ""}
-                  onChange={
-                    onCategoryChange
-                  } /* parent updates task.categoryName */
-                  placeholder="Type category name"
+                  value={searchTaskName}
+                  onChange={(e) => onSearchTaskName?.(e.target.value)}
+                  placeholder="Type task name or category"
                   className="input input-bordered w-full mb-2"
                 />
 
                 <ul className="border p-2 rounded shadow bg-white max-h-60 overflow-auto">
-                  {displayedCategories.length ? (
+                  {categoriesLoading ? (
+                    <div className="flex justify-center items-center py-2">
+                      <div className="loader ease-linear border-4 border-t-4 border-gray-200 rounded-full h-6 w-6 border-t-primary animate-spin"></div>
+                    </div>
+                  ) : categoriesError ? (
+                    <li className="alert alert-error mb-2">
+                      <span className="text-white">
+                        Error fetching categories: {categoriesError}
+                      </span>
+                    </li>
+                  ) : displayedCategories.length ? (
                     displayedCategories.map((category) => (
                       <li
                         key={category._id}
                         className="cursor-pointer hover:bg-gray-200 px-2 py-1"
-                        onClick={() => handleCategoryClick(category)}
+                        onClick={() => handleCategorySelect(category)}
                       >
                         {category.categoryName}
                       </li>
                     ))
                   ) : (
                     <li className="px-2 py-1 text-gray-500">
-                      Category not exist, add new
+                      Category not exist
                     </li>
                   )}
                 </ul>

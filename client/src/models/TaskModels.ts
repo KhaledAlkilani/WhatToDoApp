@@ -31,6 +31,7 @@ export enum MenuType {
   STATUS = "Status",
   DATE_RANGE = "Date range",
   TASK_CATEGORY = "Task category",
+  TASK_SEARCH = "Task search",
 }
 
 export interface PaginationData {

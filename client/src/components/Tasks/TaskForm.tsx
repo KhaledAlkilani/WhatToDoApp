@@ -9,6 +9,7 @@ import { formatDateForInput } from "../../utils";
 import { getCategories } from "../../services/apiService";
 import { Category } from "../../models/CategoryModel";
 import Menu from "./Menu";
+import useCategories from "../../hooks/useCategories";
 
 interface TaskFormProps {
   mode: TaskFormMode;
@@ -27,19 +28,10 @@ const TaskForm = ({
 }: TaskFormProps) => {
   const [statusMessage, setStatusMessage] =
     useState<TaskFormOnSubmitStatuses | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
+
+  const { categories, loading, error } = useCategories();
 
   const id = useId();
-
-  useEffect(() => {
-    getCategories()
-      .then((data) => {
-        setCategories(data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
 
   const handleTaskNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTask({
@@ -197,6 +189,8 @@ const TaskForm = ({
           <Menu
             menuType={MenuType.TASK_CATEGORY}
             categories={categories}
+            categoriesLoading={loading}
+            categoriesError={error}
             task={task}
             selectedCategory={task.category}
             onCategorySelect={handleCategorySelect}

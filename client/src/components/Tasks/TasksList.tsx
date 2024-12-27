@@ -3,6 +3,7 @@ import trashCan from "../../assets/trash-can.svg";
 import TaskStatusIcons from "./TaskStatusIcons";
 import "../../index.css";
 import { getTaskStatus } from "../../utils";
+import useCategories from "../../hooks/useCategories";
 
 export interface TasksListProps {
   loading: boolean;
@@ -38,7 +39,7 @@ const TasksList = ({
       {/* Tasks List */}
       {loading ? (
         <div className="flex justify-center mt-6">
-          <span className="loading loading-dots loading-md mt-2"></span>
+          <span className="loader ease-linear border-4 border-t-4 border-gray-200 rounded-full h-6 w-6 border-t-primary animate-spin mt-2"></span>
         </div>
       ) : error ? (
         <div className="flex justify-center items-center mt-4">
@@ -81,12 +82,19 @@ const TasksList = ({
                 </h2>
 
                 <div className="text-sm text-gray-600 mt-1 mb-5 flex-1 text-center md:text-left">
+                  {task.category && (
+                    <p>
+                      <strong>Category: </strong>
+                      <span>{task.category.categoryName}</span>
+                    </p>
+                  )}
+
                   <p>
-                    <strong>Start Date:</strong>{" "}
+                    <strong>Start Date: </strong>
                     {new Date(task.startDate!).toLocaleDateString()}
                   </p>
                   <p>
-                    <strong>End Date:</strong>{" "}
+                    <strong>End Date: </strong>
                     {new Date(task.endDate!).toLocaleDateString()}
                   </p>
                 </div>
