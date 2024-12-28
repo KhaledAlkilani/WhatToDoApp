@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from "react";
+import { useId, useState } from "react";
 import {
   MenuType,
   Task,
@@ -6,7 +6,6 @@ import {
   TaskFormOnSubmitStatuses,
 } from "../../models/TaskModels";
 import { formatDateForInput } from "../../utils";
-import { getCategories } from "../../services/apiService";
 import { Category } from "../../models/CategoryModel";
 import Menu from "./Menu";
 import useCategories from "../../hooks/useCategories";

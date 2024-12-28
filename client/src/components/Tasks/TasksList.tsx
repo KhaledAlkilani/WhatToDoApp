@@ -3,7 +3,6 @@ import trashCan from "../../assets/trash-can.svg";
 import TaskStatusIcons from "./TaskStatusIcons";
 import "../../index.css";
 import { getTaskStatus } from "../../utils";
-import useCategories from "../../hooks/useCategories";
 
 export interface TasksListProps {
   loading: boolean;

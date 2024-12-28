@@ -7,7 +7,6 @@ import {
 } from "../../models/TaskModels";
 import Menu from "./Menu";
 import { getTasksByDateRange } from "../../services/apiService";
-import useCategories from "../../hooks/useCategories";
 
 interface TasksViewHeaderProps {
   searchTaskName: string;
@@ -32,14 +31,6 @@ const TasksViewHeader = ({
   onOpenTaskModal,
   onFetchPagedTasks,
 }: TasksViewHeaderProps) => {
-  const {
-    categories,
-    loading,
-    error,
-    selectedCategory,
-    updateSelectedCategory,
-  } = useCategories();
-
   const handleApplyDateRange = async () => {
     if (!task.startDate || !task.endDate) {
       console.error("Start date or end date is missing.");
@@ -79,17 +70,8 @@ const TasksViewHeader = ({
           </button>
         </div>
       </div>
-      <div className="flex flex-col md:flex-row px-4 md:px-10 justify-between">
-        <Menu
-          menuType={MenuType.TASK_SEARCH}
-          searchTaskName={searchTaskName}
-          onSearchTaskName={onSearchTaskName}
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onCategorySelect={updateSelectedCategory}
-          styles="w-full md:w-80"
-        />
-        {/* <div className="flex-1 mb-4 md:mb-6">
+      <div className="flex flex-col md:flex-row px-4 md:px-10 md:items-end">
+        <div className="flex-1 mb-4 md:mb-6">
           <label htmlFor="search" className="block mb-2 text-left">
             Search
           </label>
@@ -101,7 +83,7 @@ const TasksViewHeader = ({
             onChange={(e) => onSearchTaskName(e.target.value)}
             className="input input-bordered w-full md:w-80"
           />
-        </div> */}
+        </div>
 
         <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 mb-4 md:mb-6">
           <Menu

@@ -144,3 +144,15 @@ export async function getCategories(): Promise<Category[]> {
     );
   }
 }
+
+export const searchTasksByCategory = async (categoryName: string) => {
+  try {
+    const response = await axios.get(`/categories/search-by-category`, {
+      params: { categoryName },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error searching tasks by category:", error);
+    throw new Error("Error searching tasks by category");
+  }
+};

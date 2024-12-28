@@ -55,7 +55,7 @@ const Tasks = () => {
   }, []);
 
   useEffect(() => {
-    handleSearchTasks();
+    handleSearchTasksByName();
   }, [debouncedSearchTaskName]);
 
   // Fetch tasks whenever currentPage changes
@@ -83,7 +83,7 @@ const Tasks = () => {
     }
   };
 
-  const handleSearchTasks = async () => {
+  const handleSearchTasksByName = async () => {
     if (debouncedSearchTaskName.trim() === "") {
       setSearchedTasks(null);
       return;
@@ -92,7 +92,7 @@ const Tasks = () => {
       const searchedTasks = await searchTasksByName(debouncedSearchTaskName);
       setSearchedTasks(searchedTasks);
     } catch (err) {
-      console.error("Error fetching searched tasks.", err);
+      console.error("Error fetching searched tasks by name.", err);
     }
   };
 

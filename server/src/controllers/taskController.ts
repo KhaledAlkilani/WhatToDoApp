@@ -1,13 +1,7 @@
 import { Request, Response } from "express";
 import Task from "../models/taskModel ";
-import Category, { TaskPopulationFields } from "../models/categoryModel";
-
-export const TaskCategoryPopulateSelect = {
-  CATEGORY: {
-    path: TaskPopulationFields.CATEGORY,
-    select: `${TaskPopulationFields.CATEGORY_ID} ${TaskPopulationFields.CATEGORY_NAME}`,
-  },
-} as const;
+import Category from "../models/categoryModel";
+import { TaskCategoryPopulateSelect } from "./categoryController";
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
@@ -169,7 +163,7 @@ export const getTasksWithPagination = async (
     const skip = (page - 1) * limit;
 
     const tasks = await Task.find()
-      .populate("category", "categoryName")
+      .populate(TaskCategoryPopulateSelect.CATEGORY)
       .skip(skip)
       .limit(limit);
 
