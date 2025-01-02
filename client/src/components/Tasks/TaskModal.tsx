@@ -43,6 +43,7 @@ const TaskModal = ({
         <TaskForm
           mode={mode}
           onSubmit={onSubmit}
+          onClose={onClose}
           setTask={setTask}
           task={task}
           tasksList={tasksList}

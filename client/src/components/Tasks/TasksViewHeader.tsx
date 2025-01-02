@@ -7,6 +7,7 @@ import {
 } from "../../models/TaskModels";
 import Menu from "./Menu";
 import { getTasksByDateRange } from "../../services/apiService";
+import useCategories from "../../hooks/useCategories";
 
 interface TasksViewHeaderProps {
   searchTaskName: string;
@@ -17,7 +18,10 @@ interface TasksViewHeaderProps {
   onSelectedStatus: (value: TaskStatus | null) => void;
   onSetTasksList: (value: Task[]) => void;
   onOpenTaskModal: (mode: TaskFormMode, taskId?: string) => void;
-  onFetchPagedTasks?: (page: number) => Promise<void>;
+  onFetchPagedTasks?: (
+    page: number,
+    status: TaskStatus | null
+  ) => Promise<void>;
 }
 
 const TasksViewHeader = ({
@@ -31,6 +35,16 @@ const TasksViewHeader = ({
   onOpenTaskModal,
   onFetchPagedTasks,
 }: TasksViewHeaderProps) => {
+  const {
+    categories,
+    loading,
+    error,
+    searchCategory,
+    handleSearchCategory,
+    selectedCategory,
+    updateSelectedCategory,
+  } = useCategories();
+
   const handleApplyDateRange = async () => {
     if (!task.startDate || !task.endDate) {
       console.error("Start date or end date is missing.");
@@ -55,8 +69,6 @@ const TasksViewHeader = ({
     }
   };
 
-  const id = useId();
-
   return (
     <div className="sticky top-0 bg-white z-10 shadow">
       <div className="flex justify-between p-8">
@@ -72,16 +84,18 @@ const TasksViewHeader = ({
       </div>
       <div className="flex flex-col md:flex-row px-4 md:px-10 md:items-end">
         <div className="flex-1 mb-4 md:mb-6">
-          <label htmlFor="search" className="block mb-2 text-left">
-            Search
-          </label>
-          <input
-            type="text"
-            id={`searchField-${id}`}
-            placeholder="Search task by name"
-            value={searchTaskName}
-            onChange={(e) => onSearchTaskName(e.target.value)}
-            className="input input-bordered w-full md:w-80"
+          <Menu
+            menuType={MenuType.TASK_SEARCH}
+            styles="w-full md:w-80"
+            onSearchTask={onSearchTaskName}
+            searchTask={searchTaskName}
+            categories={categories}
+            categoriesLoading={loading}
+            categoriesError={error}
+            searchCategory={searchCategory}
+            onSearchCategory={handleSearchCategory}
+            onCategorySelect={updateSelectedCategory}
+            selectedCategory={selectedCategory}
           />
         </div>
 
@@ -100,7 +114,7 @@ const TasksViewHeader = ({
             onSelectStatus={(status: TaskStatus | null) =>
               onSelectedStatus(status)
             }
-            selectedStatus={selectedStatus || ""}
+            selectedStatus={selectedStatus}
             styles="w-full md:w-60 lg:w-60"
           />
         </div>

@@ -5,11 +5,8 @@ import {
   createTask,
   deleteTask,
   editTask,
-  getTasks,
   getTasksWithPagination,
-  searchTasksByName,
 } from "../../services/apiService";
-import { getTaskStatus } from "../../utils";
 import TaskModal from "./TaskModal";
 import TasksViewHeader from "./TasksViewHeader";
 import { useSearchDebounce } from "../../hooks/useSearchDebounce";
@@ -34,40 +31,30 @@ const Tasks = () => {
   const [formMode, setFormMode] = useState<TaskFormMode>(TaskFormMode.CREATE);
   const [task, setTask] = useState<Task>(initialData);
   const [searchTaskName, setSearchTaskName] = useState<string>("");
-  const [searchedTasks, setSearchedTasks] = useState<Task[] | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
 
-  const debouncedSearchTaskName = useSearchDebounce(searchTaskName, 500); // Debounce the search input by 500ms
+  const debouncedSearchTask = useSearchDebounce(searchTaskName, 500); // Debounce the search input by 500ms
 
   useEffect(() => {
-    setLoading(true);
-    getTasks()
-      .then((data) => {
-        setTasksList(data);
-        setLoading(false);
-      })
-
-      .catch((error) => {
-        setError(error.message);
-        setLoading(false);
-      });
-  }, []);
+    // When search or status changes, reset to page 1
+    setCurrentPage(1);
+  }, [debouncedSearchTask, selectedStatus]);
 
   useEffect(() => {
-    handleSearchTasksByName();
-  }, [debouncedSearchTaskName]);
+    // Fetch tasks whenever currentPage, selectedStatus, or search changes
+    fetchPagedTasks(currentPage, selectedStatus);
+  }, [currentPage, selectedStatus, debouncedSearchTask]);
 
   // Fetch tasks whenever currentPage changes
-  useEffect(() => {
-    fetchPagedTasks(currentPage);
-  }, [currentPage]);
-
-  // Fetch tasks whenever currentPage changes
-  const fetchPagedTasks = async (page: number) => {
+  const fetchPagedTasks = async (page: number, status: TaskStatus | null) => {
     setLoading(true);
     try {
-      const data = await getTasksWithPagination(page);
+      const data = await getTasksWithPagination(
+        page,
+        status,
+        debouncedSearchTask
+      );
       setTasksList(data.tasks);
       setTotalPages(data.pagination.totalPages);
       setLoading(false);
@@ -80,19 +67,6 @@ const Tasks = () => {
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-    }
-  };
-
-  const handleSearchTasksByName = async () => {
-    if (debouncedSearchTaskName.trim() === "") {
-      setSearchedTasks(null);
-      return;
-    }
-    try {
-      const searchedTasks = await searchTasksByName(debouncedSearchTaskName);
-      setSearchedTasks(searchedTasks);
-    } catch (err) {
-      console.error("Error fetching searched tasks by name.", err);
     }
   };
 
@@ -179,7 +153,6 @@ const Tasks = () => {
     if (confirmDelete) {
       try {
         await deleteTask(taskId);
-
         const updatedTasks = tasksList.filter((task) => task._id !== taskId);
         setTasksList(updatedTasks);
 
@@ -190,11 +163,6 @@ const Tasks = () => {
       }
     }
   };
-
-  const filteredTasks =
-    selectedStatus === null
-      ? tasksList
-      : tasksList.filter((task) => getTaskStatus(task) === selectedStatus);
 
   return (
     <>
@@ -222,13 +190,12 @@ const Tasks = () => {
         />
       )}
 
-      {filteredTasks.length ? (
+      {tasksList.length ? (
         <TasksList
-          searchedTasks={searchedTasks}
           loading={loading}
           error={error}
           selectedStatus={selectedStatus}
-          tasksList={filteredTasks}
+          tasksList={tasksList}
           onSelectedStatus={setSelectedStatus}
           onDeleteTask={handleDeleteTask}
           onOpenTaskModal={(mode, taskId) => openModal(mode, taskId)}

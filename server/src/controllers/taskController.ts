@@ -1,20 +1,7 @@
 import { Request, Response } from "express";
-import Task from "../models/taskModel ";
+import Task, { TaskStatus } from "../models/taskModel ";
 import Category from "../models/categoryModel";
 import { TaskCategoryPopulateSelect } from "./categoryController";
-
-export const getTasks = async (req: Request, res: Response) => {
-  try {
-    const tasks = await Task.find().populate(
-      TaskCategoryPopulateSelect.CATEGORY
-    );
-    res.status(200).json(tasks);
-  } catch (err: any) {
-    res
-      .status(500)
-      .json({ message: "Couldn't get tasks from the db", error: err.message });
-  }
-};
 
 export const createTask = async (req: Request, res: Response) => {
   const { name, content, startDate, endDate, categoryName } = req.body;
@@ -28,11 +15,24 @@ export const createTask = async (req: Request, res: Response) => {
       await category.save(); // Save the new category to the database
     }
 
+    // Determine the initial status based on dates
+    const currentDate = new Date();
+    let status: TaskStatus;
+
+    if (startDate && new Date(startDate) > currentDate) {
+      status = TaskStatus.NEW;
+    } else if (endDate && new Date(endDate) < currentDate) {
+      status = TaskStatus.DONE;
+    } else {
+      status = TaskStatus.IN_PROGRESS;
+    }
+
     const newTask = new Task({
       name,
       content,
       startDate,
       endDate,
+      status,
       category: category._id,
     });
 
@@ -62,10 +62,29 @@ export const editTask = async (req: Request, res: Response) => {
       await category.save();
     }
 
+    // Determine the status based on dates
+    const currentDate = new Date();
+    let status: TaskStatus;
+
+    if (startDate && new Date(startDate) > currentDate) {
+      status = TaskStatus.NEW;
+    } else if (endDate && new Date(endDate) < currentDate) {
+      status = TaskStatus.DONE;
+    } else {
+      status = TaskStatus.IN_PROGRESS;
+    }
+
     // Update and populate in one operation
     const updatedTask = await Task.findByIdAndUpdate(
       taskId,
-      { name, content, startDate, endDate, category: category._id },
+      {
+        name,
+        content,
+        startDate,
+        endDate,
+        status, // Add the calculated status
+        category: category._id,
+      },
       { new: true }
     ).populate(TaskCategoryPopulateSelect.CATEGORY);
 
@@ -152,26 +171,98 @@ export const getTasksByDateRange = async (
   }
 };
 
-// Pagination function
 export const getTasksWithPagination = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 20;
-    const skip = (page - 1) * limit;
+    const page: number = parseInt(req.query.page as string, 10) || 1;
+    const limit: number = parseInt(req.query.limit as string, 10) || 20;
+    const skip: number = (page - 1) * limit;
 
-    const tasks = await Task.find()
-      .populate(TaskCategoryPopulateSelect.CATEGORY)
-      .skip(skip)
-      .limit(limit);
+    const status: TaskStatus | undefined = req.query.status as
+      | TaskStatus
+      | undefined;
+    const search: string | undefined = req.query.search as string | undefined;
 
-    const totalCount = await Task.countDocuments();
+    // Build the aggregation pipeline
+    const pipeline: any[] = [
+      // First stage: Join with categories collection
+      {
+        $lookup: {
+          from: "Categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "categoryData",
+        },
+      },
+      // Unwind the category array created by lookup
+      {
+        $unwind: "$categoryData",
+      },
+    ];
+
+    // Add search stage if search term is provided
+    if (search && search.trim() !== "") {
+      const searchTerm = search.trim();
+      pipeline.push({
+        $match: {
+          $or: [
+            { name: { $regex: searchTerm, $options: "i" } },
+            {
+              "categoryData.categoryName": {
+                $regex: searchTerm,
+                $options: "i",
+              },
+            },
+          ],
+        },
+      });
+    }
+
+    // Add status filter if provided
+    if (status && Object.values(TaskStatus).includes(status as TaskStatus)) {
+      pipeline.push({
+        $match: { status: status },
+      });
+    }
+
+    // Add pagination stages
+    const paginationPipeline = [
+      // Get total count before pagination
+      {
+        $facet: {
+          metadata: [{ $count: "total" }],
+          data: [
+            { $skip: skip },
+            { $limit: limit },
+            // Reshape the document to match your existing response format
+            {
+              $project: {
+                _id: 1,
+                name: 1,
+                content: 1,
+                startDate: 1,
+                endDate: 1,
+                status: 1,
+                category: "$categoryData",
+              },
+            },
+          ],
+        },
+      },
+    ];
+
+    const finalPipeline = [...pipeline, ...paginationPipeline];
+
+    // Execute the aggregation
+    const [result] = await Task.aggregate(finalPipeline);
+
+    const totalCount = result.metadata[0]?.total || 0;
     const totalPages = Math.ceil(totalCount / limit);
 
     res.status(200).json({
-      tasks,
+      tasks: result.data,
       pagination: {
         currentPage: page,
         totalPages,

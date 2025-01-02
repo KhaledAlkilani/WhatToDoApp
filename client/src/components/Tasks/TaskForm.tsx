@@ -16,6 +16,7 @@ interface TaskFormProps {
   task: Task;
   setTask: React.Dispatch<React.SetStateAction<Task>>;
   tasksList: Task[];
+  onClose: () => void;
 }
 
 const TaskForm = ({
@@ -24,11 +25,13 @@ const TaskForm = ({
   setTask,
   task,
   tasksList,
+  onClose,
 }: TaskFormProps) => {
   const [statusMessage, setStatusMessage] =
     useState<TaskFormOnSubmitStatuses | null>(null);
 
-  const { categories, loading, error } = useCategories();
+  const { categories, loading, error, handleSearchCategory, searchCategory } =
+    useCategories();
 
   const id = useId();
 
@@ -91,8 +94,8 @@ const TaskForm = ({
   };
 
   const checkFieldsChange = () => {
-    const taskToEdit = tasksList.find((task) => task);
-    if (!taskToEdit) return false; // Return false if task not found.
+    const taskToEdit = tasksList.find((t) => t._id === task._id);
+    if (!taskToEdit) return false;
 
     const isChanged =
       task.name.trim() !== taskToEdit.name.trim() ||
@@ -195,6 +198,8 @@ const TaskForm = ({
             onCategorySelect={handleCategorySelect}
             onCategoryChange={handleTaskCategoryChange}
             styles="w-full h-11"
+            searchCategory={searchCategory}
+            onSearchCategory={handleSearchCategory}
           />
         </div>
 
@@ -247,11 +252,24 @@ const TaskForm = ({
         )}
 
         {/* Submit Button */}
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-4">
+          <button
+            onClick={(e: React.FormEvent) => {
+              onClose();
+            }}
+            type="button"
+            className="btn btn-outline text-error border-error hover:bg-error hover:border-error"
+          >
+            Cancel
+          </button>
           <button
             type="submit"
-            className="btn btn-primary text-whity"
-            disabled={mode === TaskFormMode.UPDATE && !checkFieldsChange()} // Disable button if no changes
+            className={`btn ${
+              mode === TaskFormMode.UPDATE && !checkFieldsChange()
+                ? "!text-pastelGray !border-pastelGray hover:!bg-pastelLightGray"
+                : "btn-primary text-whity"
+            }`}
+            disabled={mode === TaskFormMode.UPDATE && !checkFieldsChange()}
           >
             {mode === TaskFormMode.CREATE ? "Add Task" : "Save Changes"}
           </button>

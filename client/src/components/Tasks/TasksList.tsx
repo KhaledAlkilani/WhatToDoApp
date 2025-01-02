@@ -9,7 +9,7 @@ export interface TasksListProps {
   error: string | null;
   selectedStatus: TaskStatus | null;
   tasksList: Task[];
-  searchedTasks: Task[] | null;
+  // searchedTasks: Task[] | null;
   onSelectedStatus: (value: TaskStatus | null) => void;
   onDeleteTask: (taskId: string) => void;
   onOpenTaskModal: (mode: TaskFormMode, taskId?: string) => void;
@@ -18,20 +18,22 @@ export interface TasksListProps {
 const TasksList = ({
   loading,
   error,
-  searchedTasks,
+  // searchedTasks,
   selectedStatus,
   tasksList,
   onDeleteTask,
   onOpenTaskModal,
 }: TasksListProps) => {
-  const tasksToRender = (searchedTasks ?? tasksList).filter((task) => {
-    // Status filter
-    const matchesStatus =
-      selectedStatus === null || getTaskStatus(task) === selectedStatus;
+  // const tasksToRender = (searchedTasks ?? tasksList).filter((task) => {
+  //   // Status filter
+  //   const matchesStatus =
+  //     selectedStatus === null || getTaskStatus(task) === selectedStatus;
 
-    // Combine all filters (search + status)
-    return matchesStatus;
-  });
+  //   // Combine all filters (search + status)
+  //   return matchesStatus;
+  // });
+
+  const tasksToRender = tasksList;
 
   return (
     <>
@@ -46,7 +48,7 @@ const TasksList = ({
             <p>Error fetching tasks: {error}</p>
           </div>
         </div>
-      ) : (
+      ) : tasksToRender.length > 0 ? (
         <div
           style={{ height: "calc(100vh - 220px)" }}
           className="overflow-y-auto scrollbar-custom h-screen w-full relative"
@@ -66,7 +68,7 @@ const TasksList = ({
                   </div>
                   <div
                     role="button"
-                    onClick={(e: React.FormEvent) => {
+                    onClick={(e: React.MouseEvent) => {
                       e.preventDefault();
                       onDeleteTask(task._id);
                     }}
@@ -100,11 +102,11 @@ const TasksList = ({
 
                 <div className="flex justify-center">
                   <button
-                    onClick={(e: React.FormEvent) => {
+                    onClick={(e: React.MouseEvent) => {
                       e.preventDefault();
                       onOpenTaskModal(TaskFormMode.UPDATE, task._id);
                     }}
-                    className="btn btn-primary text-whity"
+                    className="btn btn-primary text-white"
                   >
                     Open
                   </button>
@@ -112,6 +114,10 @@ const TasksList = ({
               </div>
             ))}
           </div>
+        </div>
+      ) : (
+        <div className="flex justify-center items-center mt-4">
+          <p className="text-black">No tasks found</p>
         </div>
       )}
     </>

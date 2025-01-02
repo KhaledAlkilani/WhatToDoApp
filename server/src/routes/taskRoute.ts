@@ -4,14 +4,11 @@ import {
   deleteTask,
   editTask,
   getTasksByDateRange,
-  getTasks,
   searchTasksByName,
   getTasksWithPagination,
 } from "../controllers/taskController";
 
 const taskRoute = Router();
-
-taskRoute.get("/tasks", getTasks);
 
 taskRoute.post("/tasks", createTask);
 

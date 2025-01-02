@@ -1,21 +1,11 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import { Task } from "../models/TaskModels";
+import { Task, TaskStatus } from "../models/TaskModels";
 import { Category } from "../models/CategoryModel";
 
 const apiClient = axios.create({
   baseURL: "http://localhost:5000/api",
   timeout: 5000,
 });
-
-export async function getTasks() {
-  try {
-    const response: AxiosResponse = await apiClient.get("/tasks");
-    return response.data;
-  } catch (error) {
-    const err = error as AxiosError;
-    throw new Error(`Error fetching tasks. ${err.response?.data}`);
-  }
-}
 
 export async function createTask(task: Task) {
   try {
@@ -117,10 +107,24 @@ export const getTasksByDateRange = async (
   }
 };
 
-export const getTasksWithPagination = async (currentPage: number) => {
+export const getTasksWithPagination = async (
+  currentPage: number,
+  status: TaskStatus | null,
+  search: string
+) => {
   try {
+    const params: Record<string, any> = { page: currentPage };
+
+    if (status) {
+      params.status = status;
+    }
+
+    if (search && search.trim() !== "") {
+      params.search = search.trim();
+    }
+
     const response: AxiosResponse = await apiClient.get("/tasks/pagination", {
-      params: { page: currentPage },
+      params,
     });
     return response.data;
   } catch (error) {
@@ -130,29 +134,17 @@ export const getTasksWithPagination = async (currentPage: number) => {
   }
 };
 
-// Fetch all categories
-export async function getCategories(): Promise<Category[]> {
+export const getCategories = async (search?: string) => {
   try {
-    const response: AxiosResponse<Category[]> = await apiClient.get(
-      "/categories"
-    );
-    return response.data;
-  } catch (error) {
-    const err = error as AxiosError;
-    throw new Error(
-      `Failed to fetch categories: ${err.response?.data || err.message}`
-    );
-  }
-}
+    const params: Record<string, any> = {};
+    if (search) {
+      params.search = search;
+    }
 
-export const searchTasksByCategory = async (categoryName: string) => {
-  try {
-    const response = await axios.get(`/categories/search-by-category`, {
-      params: { categoryName },
-    });
+    const response = await apiClient.get("/categories", { params });
     return response.data;
   } catch (error) {
-    console.error("Error searching tasks by category:", error);
-    throw new Error("Error searching tasks by category");
+    console.error("Error fetching categories:", error);
+    throw error;
   }
 };

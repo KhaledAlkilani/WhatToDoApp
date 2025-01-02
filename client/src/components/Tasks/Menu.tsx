@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { MenuType, Task, TaskStatus } from "../../models/TaskModels";
 import closeIcon from "../../assets/close-icon.svg";
 import downArrow from "../../assets/arrow-down.svg";
@@ -9,19 +9,26 @@ import TaskStatusSelect from "./TaskStatusSelect";
 
 interface MenuProps {
   menuType: MenuType;
-  selectedStatus?: string;
+  selectedStatus?: TaskStatus | null;
   task?: Task;
   selectedCategory?: Category;
   categories?: Category[];
   categoriesLoading?: boolean;
   categoriesError?: string | null;
   styles?: string;
+  searchTask?: string;
+  searchCategory?: string;
   onSelectStatus?: (status: TaskStatus | null) => void;
   onSetTask?: (value: Task) => void;
   onApplyDateRange?: () => Promise<void>;
   onCategorySelect?: (category: Category) => void;
   onCategoryChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onFetchPagedTasks?: (page: number) => Promise<void>;
+  onFetchPagedTasks?: (
+    page: number,
+    status: TaskStatus | null
+  ) => Promise<void>;
+  onSearchTask?: (value: string) => void;
+  onSearchCategory?: (value: string) => void;
 }
 
 const Menu = ({
@@ -33,14 +40,20 @@ const Menu = ({
   categoriesLoading,
   categoriesError,
   styles = "",
+  searchTask,
+  searchCategory,
   onCategorySelect,
   onCategoryChange,
   onSetTask,
   onSelectStatus,
   onApplyDateRange,
   onFetchPagedTasks,
+  onSearchTask,
+  onSearchCategory,
 }: MenuProps) => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  const id = useId();
 
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
@@ -78,38 +91,19 @@ const Menu = ({
   const handleResetDateRange = async () => {
     const resetTask: Task = {
       ...task!,
-      startDate: Date(),
-      endDate: Date(),
+      startDate: new Date(),
+      endDate: new Date(),
     };
     onSetTask?.(resetTask);
-    await onFetchPagedTasks?.(1);
+    await onFetchPagedTasks?.(1, selectedStatus || null);
   };
 
   const handleCategorySelect = (category: Category) => {
     onCategorySelect?.(category);
+    onSearchCategory?.(category.categoryName);
+    onSearchTask?.(category.categoryName);
     setIsMenuOpen(false);
   };
-
-  // Retrieve the typed value from the selectedCategory (if any), and normalize it by trimming spaces and converting to lowercase
-  const typedValue = (task?.category?.categoryName ?? "").trim().toLowerCase();
-
-  // Start with the full list of categories (or an empty array if categories are not provided)
-  let displayedCategories = categories || [];
-
-  // Check if the user has typed anything in the input field (non-empty typedValue)
-  if (typedValue.length > 0) {
-    // 1) Filter the categories by the user's typed input (matching category names)
-    displayedCategories = displayedCategories.filter(
-      (cat) => cat.categoryName.toLowerCase().includes(typedValue) // Check if categoryName contains the typed input (case-insensitive)
-    );
-
-    // 2) Exclude the selected category from the list to prevent it from showing again after selection
-    if (selectedCategory?._id) {
-      displayedCategories = (categories || []).filter(
-        (cat) => cat._id !== selectedCategory._id // Exclude the category with the same ID as the selectedCategory
-      );
-    }
-  }
 
   return (
     <div className={`relative inline-block ${styles}`}>
@@ -154,12 +148,42 @@ const Menu = ({
                   "Add new or select existing"}
               </span>
             </div>
+
             <img
               src={closeIcon}
               alt="close icon"
               width={12}
               onClick={() => {
                 onCategorySelect?.({ _id: "", categoryName: "" });
+              }}
+              className="mr-2 cursor-pointer"
+            />
+          </>
+        )}
+
+        {menuType === MenuType.TASK_SEARCH && (
+          <>
+            <div className="flex flex-1">
+              <span
+                className={
+                  selectedCategory?.categoryName
+                    ? "text-black-900"
+                    : "text-gray-500"
+                }
+              >
+                {(!isMenuOpen && searchCategory) ||
+                  "Search task by name or category"}
+              </span>
+            </div>
+
+            <img
+              src={closeIcon}
+              alt="close icon"
+              width={12}
+              onClick={() => {
+                onCategorySelect?.({ _id: "", categoryName: "" });
+                onSearchCategory?.("");
+                onSearchTask?.("");
               }}
               className="mr-2 cursor-pointer"
             />
@@ -199,10 +223,56 @@ const Menu = ({
                 categoriesLoading={categoriesLoading}
                 categoriesError={categoriesError}
                 task={task}
-                displayedCategories={displayedCategories}
+                displayedCategories={categories || []}
                 handleCategorySelect={handleCategorySelect}
                 onCategoryChange={onCategoryChange}
+                searchCategory={searchCategory}
+                onSearchCategory={onSearchCategory}
+                selectedCategory={selectedCategory}
               />
+            )}
+
+            {menuType === MenuType.TASK_SEARCH && (
+              <>
+                <input
+                  type="text"
+                  id={`searchField-${id}`}
+                  placeholder="Type task name or category here"
+                  value={searchTask || searchCategory}
+                  onChange={(e) => {
+                    onSearchTask?.(e.target.value);
+                    onSearchCategory?.(e.target.value);
+                  }}
+                  className="input input-bordered w-full md:w-80"
+                />
+                <ul className="border p-2 rounded shadow bg-white max-h-60 overflow-auto">
+                  {categoriesLoading ? (
+                    <div className="flex justify-center items-center py-2">
+                      <div className="loader ease-linear border-4 border-t-4 border-gray-200 rounded-full h-6 w-6 border-t-primary animate-spin"></div>
+                    </div>
+                  ) : categoriesError ? (
+                    <li className="alert alert-error mb-2">
+                      <span className="text-white">
+                        Error fetching categories: {categoriesError}
+                      </span>
+                    </li>
+                  ) : categories?.length ? (
+                    categories.map((category) => (
+                      <li
+                        key={category._id}
+                        className="cursor-pointer hover:bg-gray-200 px-2 py-1"
+                        onClick={() => handleCategorySelect(category)}
+                      >
+                        {category.categoryName}
+                      </li>
+                    ))
+                  ) : (
+                    <li className="px-2 py-1 text-gray-500">
+                      No categories available.
+                    </li>
+                  )}
+                </ul>
+              </>
             )}
           </div>
         </div>
