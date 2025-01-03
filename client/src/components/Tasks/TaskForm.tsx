@@ -147,7 +147,7 @@ const TaskForm = ({
     <div className="w-full max-w-lg mx-auto">
       <form
         onSubmit={handleFormSubmit}
-        className="flex flex-col gap-6 w-full bg-white p-6"
+        className="flex flex-col gap-6 w-full bg-white p-4"
       >
         <div>
           <label
@@ -185,7 +185,7 @@ const TaskForm = ({
 
         <div>
           <label
-            htmlFor="taskName"
+            htmlFor="category"
             className="block text-sm font-semibold mb-2"
           >
             Category *
@@ -205,35 +205,39 @@ const TaskForm = ({
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="startDate"
-            className="block text-sm font-semibold mb-2"
-          >
-            Start Date
-          </label>
-          <input
-            type="date"
-            id={`startDate-${id}`}
-            value={formatDateForInput(task.startDate)}
-            onChange={handleTaskStartDateChange}
-            className={"input input-bordered w-full"}
-          />
-        </div>
+        <div className="flex gap-4 mb-2">
+          <div className="w-full">
+            <label
+              htmlFor="startDate"
+              className="block text-sm font-semibold mb-2"
+            >
+              Start Date
+            </label>
+            <input
+              type="date"
+              id={`startDate-${id}`}
+              value={formatDateForInput(task.startDate)}
+              onChange={handleTaskStartDateChange}
+              className={"input input-bordered w-full"}
+            />
+          </div>
 
-        <div>
-          <label htmlFor="endDate" className="block text-sm font-semibold mb-2">
-            End Date
-          </label>
-          <input
-            type="date"
-            id={`endDate-${id}`}
-            value={formatDateForInput(task.endDate)}
-            onChange={handleTaskEndDateChange}
-            className={"input input-bordered w-full"}
-          />
+          <div className="w-full">
+            <label
+              htmlFor="endDate"
+              className="block text-sm font-semibold mb-2"
+            >
+              End Date
+            </label>
+            <input
+              type="date"
+              id={`endDate-${id}`}
+              value={formatDateForInput(task.endDate)}
+              onChange={handleTaskEndDateChange}
+              className={"input input-bordered w-full"}
+            />
+          </div>
         </div>
-
         {/* Status Message */}
         {statusMessage === TaskFormOnSubmitStatuses.FILLINFIELDS && (
           <div className="text-pastelWarning text-sm mt-2">

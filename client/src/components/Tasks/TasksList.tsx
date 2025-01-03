@@ -9,7 +9,7 @@ export interface TasksListProps {
   error: string | null;
   selectedStatus: TaskStatus | null;
   tasksList: Task[];
-   onSelectedStatus: (value: TaskStatus | null) => void;
+  onSelectedStatus: (value: TaskStatus | null) => void;
   onDeleteTask: (taskId: string) => void;
   onOpenTaskModal: (mode: TaskFormMode, taskId?: string) => void;
 }
@@ -21,8 +21,6 @@ const TasksList = ({
   onDeleteTask,
   onOpenTaskModal,
 }: TasksListProps) => {
-  const tasksToRender = tasksList;
-
   return (
     <>
       {loading ? (
@@ -35,16 +33,16 @@ const TasksList = ({
             <p>Error fetching tasks: {error}</p>
           </div>
         </div>
-      ) : tasksToRender.length > 0 ? (
+      ) : tasksList.length > 0 ? (
         <div
           style={{ height: "calc(100vh - 220px)" }}
           className="overflow-y-auto scrollbar-custom h-screen w-full relative"
         >
           <div className="flex flex-wrap sm:justify-start gap-6 p-[2rem]">
-            {tasksToRender.map((task) => (
+            {tasksList.map((task) => (
               <div
                 key={task._id}
-                className="w-full sm:w-[14rem] md:w-[16rem] lg:w-[14rem] border border-black rounded-lg p-4 flex flex-col h-auto"
+                className="card w-full sm:w-[14rem] md:w-[16rem] lg:w-[14rem] shadow-md border border-black rounded-lg p-4"
               >
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center space-x-2">
@@ -56,7 +54,6 @@ const TasksList = ({
                   <div
                     role="button"
                     onClick={(e: React.MouseEvent) => {
-                      e.preventDefault();
                       onDeleteTask(task._id);
                     }}
                     className="cursor-pointer"
@@ -65,7 +62,7 @@ const TasksList = ({
                   </div>
                 </div>
 
-                <h2 className="text-md font-semibold text-gray-800 text-center md:text-left">
+                <h2 className="text-md font-semibold text-gray-800 text-center md:text-left break-words">
                   {task.name}
                 </h2>
 
