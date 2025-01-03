@@ -9,8 +9,7 @@ export interface TasksListProps {
   error: string | null;
   selectedStatus: TaskStatus | null;
   tasksList: Task[];
-  // searchedTasks: Task[] | null;
-  onSelectedStatus: (value: TaskStatus | null) => void;
+   onSelectedStatus: (value: TaskStatus | null) => void;
   onDeleteTask: (taskId: string) => void;
   onOpenTaskModal: (mode: TaskFormMode, taskId?: string) => void;
 }
@@ -18,26 +17,14 @@ export interface TasksListProps {
 const TasksList = ({
   loading,
   error,
-  // searchedTasks,
-  selectedStatus,
   tasksList,
   onDeleteTask,
   onOpenTaskModal,
 }: TasksListProps) => {
-  // const tasksToRender = (searchedTasks ?? tasksList).filter((task) => {
-  //   // Status filter
-  //   const matchesStatus =
-  //     selectedStatus === null || getTaskStatus(task) === selectedStatus;
-
-  //   // Combine all filters (search + status)
-  //   return matchesStatus;
-  // });
-
   const tasksToRender = tasksList;
 
   return (
     <>
-      {/* Tasks List */}
       {loading ? (
         <div className="flex justify-center mt-6">
           <span className="loader ease-linear border-4 border-t-4 border-gray-200 rounded-full h-6 w-6 border-t-primary animate-spin mt-2"></span>

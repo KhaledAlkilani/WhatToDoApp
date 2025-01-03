@@ -9,6 +9,7 @@ interface TaskModalProps {
   task: Task;
   setTask: React.Dispatch<React.SetStateAction<Task>>;
   tasksList: Task[];
+  onDeleteTask: (taskId: string) => Promise<void>;
 }
 
 const TaskModal = ({
@@ -18,6 +19,7 @@ const TaskModal = ({
   task,
   setTask,
   tasksList,
+  onDeleteTask,
 }: TaskModalProps) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -33,7 +35,6 @@ const TaskModal = ({
           <button
             onClick={(e: React.FormEvent) => {
               onClose();
-              e.preventDefault();
             }}
             className="text-gray-500 text-lg"
           >
@@ -43,10 +44,11 @@ const TaskModal = ({
         <TaskForm
           mode={mode}
           onSubmit={onSubmit}
-          onClose={onClose}
           setTask={setTask}
           task={task}
           tasksList={tasksList}
+          onDeleteTask={onDeleteTask}
+          onClose={onClose}
         />
       </div>
     </div>

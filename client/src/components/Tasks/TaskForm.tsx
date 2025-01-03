@@ -17,6 +17,7 @@ interface TaskFormProps {
   setTask: React.Dispatch<React.SetStateAction<Task>>;
   tasksList: Task[];
   onClose: () => void;
+  onDeleteTask: (taskId: string) => Promise<void>;
 }
 
 const TaskForm = ({
@@ -26,6 +27,7 @@ const TaskForm = ({
   task,
   tasksList,
   onClose,
+  onDeleteTask,
 }: TaskFormProps) => {
   const [statusMessage, setStatusMessage] =
     useState<TaskFormOnSubmitStatuses | null>(null);
@@ -254,13 +256,15 @@ const TaskForm = ({
         {/* Submit Button */}
         <div className="flex justify-end gap-4">
           <button
-            onClick={(e: React.FormEvent) => {
-              onClose();
-            }}
+            onClick={
+              mode === TaskFormMode.UPDATE
+                ? (e: React.MouseEvent) => onDeleteTask(task._id)
+                : onClose
+            }
             type="button"
             className="btn btn-outline text-error border-error hover:bg-error hover:border-error"
           >
-            Cancel
+            {mode === TaskFormMode.UPDATE ? "Delete" : "Cancel"}
           </button>
           <button
             type="submit"

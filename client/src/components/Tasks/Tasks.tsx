@@ -155,7 +155,7 @@ const Tasks = () => {
         await deleteTask(taskId);
         const updatedTasks = tasksList.filter((task) => task._id !== taskId);
         setTasksList(updatedTasks);
-
+        setIsModalOpen(false);
         alert("Task deleted successfully!");
       } catch (err) {
         console.error("Failed to delete task.", err);
@@ -187,6 +187,7 @@ const Tasks = () => {
           task={task}
           setTask={setTask}
           tasksList={tasksList}
+          onDeleteTask={handleDeleteTask}
         />
       )}
 
