@@ -35,7 +35,7 @@ const TasksList = ({
         </div>
       ) : tasksList.length > 0 ? (
         <div
-          style={{ height: "calc(100vh - 220px)" }}
+          style={{ height: "calc(100vh - 191px)" }}
           className="overflow-y-auto scrollbar-custom h-screen w-full relative"
         >
           <div className="flex flex-wrap sm:justify-start gap-6 p-[2rem]">

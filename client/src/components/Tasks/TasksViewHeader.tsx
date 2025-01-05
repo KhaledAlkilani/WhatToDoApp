@@ -1,4 +1,3 @@
-import { useId } from "react";
 import {
   MenuType,
   Task,
@@ -76,7 +75,7 @@ const TasksViewHeader = ({
         <div className="relative float-end sticky top-4 right-12 border shadow-2xl rounded color-white">
           <button
             onClick={() => onOpenTaskModal(TaskFormMode.CREATE)}
-            className="btn btn-success rounded text-white"
+            className="btn btn-success rounded text-whity"
           >
             Create Task
           </button>

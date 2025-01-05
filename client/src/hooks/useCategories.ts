@@ -15,18 +15,17 @@ const useCategories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await getCategories(debouncedSearchCategory); // Fetch the categories
-        setCategories(data); // Set the fetched categories
+        const data = await getCategories(debouncedSearchCategory); 
+        setCategories(data); 
       } catch (error: unknown) {
-        // Cast error to 'unknown' type to handle it properly
-        if (error instanceof Error) {
-          setError(error.message); // Access message if error is of type 'Error'
+         if (error instanceof Error) {
+          setError(error.message);  
         } else {
-          setError("An unknown error occurred"); // Fallback for unknown errors
+          setError("An unknown error occurred"); 
         }
-        console.error(error); // Log the error for debugging
+        console.error(error);  
       } finally {
-        setLoading(false); // Set loading to false once the request is finished
+        setLoading(false);  
       }
     };
 

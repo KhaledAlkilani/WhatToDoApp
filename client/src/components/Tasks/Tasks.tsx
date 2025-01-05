@@ -208,7 +208,7 @@ const Tasks = () => {
       )}
 
       {/* Pagination controls */}
-      <div className="absolute bottom-3 right-10 flex items-center gap-4 bg-white h-10 p-2 rounded-lg shadow-lg max-w-max">
+      <div className="fixed bottom-3 right-3 md:right-10 flex items-center gap-4 bg-white h-10 p-2 rounded-lg shadow-lg max-w-max">
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
