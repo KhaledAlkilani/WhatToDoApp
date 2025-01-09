@@ -262,7 +262,7 @@ const TaskForm = ({
           <button
             onClick={
               mode === TaskFormMode.UPDATE
-                ? (e: React.MouseEvent) => onDeleteTask(task._id)
+                ? () => onDeleteTask(task._id)
                 : onClose
             }
             type="button"

@@ -1,11 +1,20 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { Task, TaskStatus } from "../models/TaskModels";
-import { Category } from "../models/CategoryModel";
 
 const apiClient = axios.create({
   baseURL: "http://localhost:5000/api",
   timeout: 5000,
 });
+
+interface TaskParams {
+  page: number;
+  status?: TaskStatus | null;
+  search?: string;
+}
+
+interface CategoryParams {
+  search?: string;
+}
 
 export async function createTask(task: Task) {
   try {
@@ -113,7 +122,7 @@ export const getTasksWithPagination = async (
   search: string
 ) => {
   try {
-    const params: Record<string, any> = { page: currentPage };
+    const params: TaskParams = { page: currentPage };
 
     if (status) {
       params.status = status;
@@ -134,9 +143,10 @@ export const getTasksWithPagination = async (
   }
 };
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 export const getCategories = async (search?: string) => {
   try {
-    const params: Record<string, any> = {};
+    const params: CategoryParams = {};
     if (search) {
       params.search = search;
     }

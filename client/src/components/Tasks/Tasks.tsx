@@ -43,6 +43,7 @@ const Tasks = () => {
 
   useEffect(() => {
     // Fetch tasks whenever currentPage, selectedStatus, or search changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchPagedTasks(currentPage, selectedStatus);
   }, [currentPage, selectedStatus, debouncedSearchTask]);
 
@@ -60,6 +61,7 @@ const Tasks = () => {
       setLoading(false);
     } catch (error) {
       setError("Failed to fetch tasks");
+      console.error("Failed to fetch tasks", error);
       setLoading(false);
     }
   };

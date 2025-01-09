@@ -53,7 +53,7 @@ const TasksList = ({
                   </div>
                   <div
                     role="button"
-                    onClick={(e: React.MouseEvent) => {
+                    onClick={() => {
                       onDeleteTask(task._id);
                     }}
                     className="cursor-pointer"
