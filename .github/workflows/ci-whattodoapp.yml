@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies for client
         run: |
           cd client
-          npm install
+          npm ci
 
       - name: Lint code for client
         run: |
@@ -61,7 +61,7 @@ jobs:
       - name: Install dependencies for server
         run: |
           cd server
-          npm install
+          npm ci
 
       - name: Lint code for server
         run: |
