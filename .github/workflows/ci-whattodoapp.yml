@@ -1,0 +1,54 @@
+name: CI WhatToDoApp Workflow
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js for the client
+      - name: Set up Node.js for client
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # Step 3: Install dependencies for the client
+      - name: Install dependencies for client
+        run: |
+          cd client
+          npm install
+
+      # Step 4: Run tests for the client
+      - name: Run tests for client
+        run: |
+          cd client
+          npm test
+
+      # Step 5: Set up Node.js for the server
+      - name: Set up Node.js for server
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # Step 6: Install dependencies for the server
+      - name: Install dependencies for server
+        run: |
+          cd server
+          npm install
+
+      # Step 7: Run tests for the server
+      - name: Run tests for server
+        run: |
+          cd server
+          npm test
