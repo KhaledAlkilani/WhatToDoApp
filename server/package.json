@@ -4,9 +4,10 @@
   "description": "Tämä osio on varattu sovelluksen serverin/backend:n toteutukselle",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon src/index.ts",
-    "test": "echo \"No tests defined for client\""
+    "lint": "eslint .",
+    "prettier:check": "prettier --check .",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
@@ -18,11 +19,11 @@
     "express": "^4.21.1",
     "mongoose": "^8.8.0",
     "nodemon": "^3.1.7",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.6.3"
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
-    "@types/mongoose": "^5.11.97"
+    "@types/mongoose": "^5.11.97",
+    "typescript": "^5.7.3"
   }
 }
