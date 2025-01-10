@@ -45,7 +45,7 @@ const TaskForm = ({
   };
 
   const handleTaskDescriptionChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     setTask({
       ...task,
@@ -72,7 +72,7 @@ const TaskForm = ({
   };
 
   const handleTaskStartDateChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setTask({
       ...task,
@@ -125,7 +125,7 @@ const TaskForm = ({
 
     if (!canProceed && mode === TaskFormMode.UPDATE) {
       const userConfirmed = window.confirm(
-        `Are you sure you want to change this task: ${task.name}?`
+        `Are you sure you want to change this task: ${task.name}?`,
       );
       if (!userConfirmed) {
         return; // Stop if the user cancels

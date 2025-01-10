@@ -15,17 +15,17 @@ const useCategories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await getCategories(debouncedSearchCategory); 
-        setCategories(data); 
+        const data = await getCategories(debouncedSearchCategory);
+        setCategories(data);
       } catch (error: unknown) {
-         if (error instanceof Error) {
-          setError(error.message);  
+        if (error instanceof Error) {
+          setError(error.message);
         } else {
-          setError("An unknown error occurred"); 
+          setError("An unknown error occurred");
         }
-        console.error(error);  
+        console.error(error);
       } finally {
-        setLoading(false);  
+        setLoading(false);
       }
     };
 

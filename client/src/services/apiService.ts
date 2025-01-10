@@ -37,7 +37,7 @@ export async function createTask(task: Task) {
     const response: AxiosResponse = await apiClient.post(
       "/tasks",
       newTask,
-      config
+      config,
     );
     return response.data;
   } catch (error) {
@@ -55,12 +55,12 @@ export async function editTask(
     startDate: Date;
     endDate: Date;
     categoryName: string;
-  }
+  },
 ) {
   try {
     const response: AxiosResponse = await apiClient.put(
       `/tasks/${taskId}`,
-      updatedTaskData
+      updatedTaskData,
     );
 
     // Return the response data (updated task).
@@ -69,7 +69,7 @@ export async function editTask(
     const err = error as AxiosError;
 
     throw new Error(
-      `Failed to edit a task. ${err.response?.data || err.message}`
+      `Failed to edit a task. ${err.response?.data || err.message}`,
     );
   }
 }
@@ -90,7 +90,7 @@ export const searchTasksByName = async (name: string) => {
       "/tasks/search-tasks-by-name",
       {
         params: { name },
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -102,7 +102,7 @@ export const searchTasksByName = async (name: string) => {
 
 export const getTasksByDateRange = async (
   startDate: string,
-  endDate: string
+  endDate: string,
 ) => {
   try {
     const response: AxiosResponse = await apiClient.get("/tasks/date-range", {
@@ -119,7 +119,7 @@ export const getTasksByDateRange = async (
 export const getTasksWithPagination = async (
   currentPage: number,
   status: TaskStatus | null,
-  search: string
+  search: string,
 ) => {
   try {
     const params: TaskParams = { page: currentPage };

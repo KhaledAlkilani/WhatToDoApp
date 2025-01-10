@@ -54,7 +54,7 @@ const Tasks = () => {
       const data = await getTasksWithPagination(
         page,
         status,
-        debouncedSearchTask
+        debouncedSearchTask,
       );
       setTasksList(data.tasks);
       setTotalPages(data.pagination.totalPages);
@@ -138,7 +138,7 @@ const Tasks = () => {
     try {
       const data = await editTask(_id, existingTaskToEdit);
       setTasksList((prev) =>
-        prev.map((task) => (task._id === _id ? data : task))
+        prev.map((task) => (task._id === _id ? data : task)),
       );
       setLoading?.(false);
     } catch (err) {
@@ -149,7 +149,7 @@ const Tasks = () => {
 
   const handleDeleteTask = async (taskId: string) => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this task?"
+      "Are you sure you want to delete this task?",
     );
 
     if (confirmDelete) {
