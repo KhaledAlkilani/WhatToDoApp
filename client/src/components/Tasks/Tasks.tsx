@@ -43,6 +43,7 @@ const Tasks = () => {
 
   useEffect(() => {
     // Fetch tasks whenever currentPage, selectedStatus, or search changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchPagedTasks(currentPage, selectedStatus);
   }, [currentPage, selectedStatus, debouncedSearchTask]);
 
@@ -53,13 +54,14 @@ const Tasks = () => {
       const data = await getTasksWithPagination(
         page,
         status,
-        debouncedSearchTask
+        debouncedSearchTask,
       );
       setTasksList(data.tasks);
       setTotalPages(data.pagination.totalPages);
       setLoading(false);
     } catch (error) {
       setError("Failed to fetch tasks");
+      console.error("Failed to fetch tasks", error);
       setLoading(false);
     }
   };
@@ -136,7 +138,7 @@ const Tasks = () => {
     try {
       const data = await editTask(_id, existingTaskToEdit);
       setTasksList((prev) =>
-        prev.map((task) => (task._id === _id ? data : task))
+        prev.map((task) => (task._id === _id ? data : task)),
       );
       setLoading?.(false);
     } catch (err) {
@@ -147,7 +149,7 @@ const Tasks = () => {
 
   const handleDeleteTask = async (taskId: string) => {
     const confirmDelete = window.confirm(
-      "Are you sure you want to delete this task?"
+      "Are you sure you want to delete this task?",
     );
 
     if (confirmDelete) {

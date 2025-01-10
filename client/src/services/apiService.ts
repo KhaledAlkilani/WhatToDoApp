@@ -1,11 +1,20 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { Task, TaskStatus } from "../models/TaskModels";
-import { Category } from "../models/CategoryModel";
 
 const apiClient = axios.create({
   baseURL: "http://localhost:5000/api",
   timeout: 5000,
 });
+
+interface TaskParams {
+  page: number;
+  status?: TaskStatus | null;
+  search?: string;
+}
+
+interface CategoryParams {
+  search?: string;
+}
 
 export async function createTask(task: Task) {
   try {
@@ -28,7 +37,7 @@ export async function createTask(task: Task) {
     const response: AxiosResponse = await apiClient.post(
       "/tasks",
       newTask,
-      config
+      config,
     );
     return response.data;
   } catch (error) {
@@ -46,12 +55,12 @@ export async function editTask(
     startDate: Date;
     endDate: Date;
     categoryName: string;
-  }
+  },
 ) {
   try {
     const response: AxiosResponse = await apiClient.put(
       `/tasks/${taskId}`,
-      updatedTaskData
+      updatedTaskData,
     );
 
     // Return the response data (updated task).
@@ -60,7 +69,7 @@ export async function editTask(
     const err = error as AxiosError;
 
     throw new Error(
-      `Failed to edit a task. ${err.response?.data || err.message}`
+      `Failed to edit a task. ${err.response?.data || err.message}`,
     );
   }
 }
@@ -81,7 +90,7 @@ export const searchTasksByName = async (name: string) => {
       "/tasks/search-tasks-by-name",
       {
         params: { name },
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -93,7 +102,7 @@ export const searchTasksByName = async (name: string) => {
 
 export const getTasksByDateRange = async (
   startDate: string,
-  endDate: string
+  endDate: string,
 ) => {
   try {
     const response: AxiosResponse = await apiClient.get("/tasks/date-range", {
@@ -110,10 +119,10 @@ export const getTasksByDateRange = async (
 export const getTasksWithPagination = async (
   currentPage: number,
   status: TaskStatus | null,
-  search: string
+  search: string,
 ) => {
   try {
-    const params: Record<string, any> = { page: currentPage };
+    const params: TaskParams = { page: currentPage };
 
     if (status) {
       params.status = status;
@@ -134,9 +143,10 @@ export const getTasksWithPagination = async (
   }
 };
 
+// eslint-disable-next-line react-hooks/exhaustive-deps
 export const getCategories = async (search?: string) => {
   try {
-    const params: Record<string, any> = {};
+    const params: CategoryParams = {};
     if (search) {
       params.search = search;
     }

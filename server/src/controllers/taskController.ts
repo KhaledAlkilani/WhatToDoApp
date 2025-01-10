@@ -38,7 +38,7 @@ export const createTask = async (req: Request, res: Response) => {
 
     const savedTask = await newTask.save();
     const populatedTask = await Task.findById(savedTask._id).populate(
-      TaskCategoryPopulateSelect.CATEGORY
+      TaskCategoryPopulateSelect.CATEGORY,
     );
     res.status(200).json(populatedTask);
   } catch (err: any) {
@@ -85,7 +85,7 @@ export const editTask = async (req: Request, res: Response) => {
         status, // Add the calculated status
         category: category._id,
       },
-      { new: true }
+      { new: true },
     ).populate(TaskCategoryPopulateSelect.CATEGORY);
 
     if (!updatedTask) {
@@ -123,7 +123,7 @@ export const deleteTask = async (req: Request, res: Response) => {
 // Search tasks by name
 export const searchTasksByName = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const { name } = req.query;
@@ -150,7 +150,7 @@ export const searchTasksByName = async (
 // Filter tasks by date range
 export const getTasksByDateRange = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   const { startDate, endDate } = req.query;
 
@@ -173,7 +173,7 @@ export const getTasksByDateRange = async (
 
 export const getTasksWithPagination = async (
   req: Request,
-  res: Response
+  res: Response,
 ): Promise<void> => {
   try {
     const page: number = parseInt(req.query.page as string, 10) || 1;
