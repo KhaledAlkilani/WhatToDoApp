@@ -49,7 +49,7 @@ const taskSchema: Schema = new Schema(
   {
     timestamps: true,
     collection: "Tasks",
-  }
+  },
 );
 
 // Task model from the schema

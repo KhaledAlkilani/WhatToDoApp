@@ -14,7 +14,7 @@ app.use(
   cors({
     origin: clientURL,
     methods: ["GET", "POST", "PUT", "DELETE"],
-  })
+  }),
 );
 
 app.use("/", helloRoute);

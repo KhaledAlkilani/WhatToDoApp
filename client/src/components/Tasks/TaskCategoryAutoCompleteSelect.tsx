@@ -61,13 +61,13 @@ const TaskCategoryAutoCompleteSelect = ({
   if (typedValue.length > 0) {
     // 1) Filter the categories by the user's typed input (matching category names)
     categories = categories.filter(
-      (cat) => cat.categoryName.toLowerCase().includes(typedValue) // Check if categoryName contains the typed input (case-insensitive)
+      (cat) => cat.categoryName.toLowerCase().includes(typedValue), // Check if categoryName contains the typed input (case-insensitive)
     );
 
     // 2) Exclude the selected category from the list to prevent it from showing again after selection
     if (selectedCategory?._id) {
       categories = (categories || []).filter(
-        (cat) => cat._id !== selectedCategory._id // Exclude the category with the same ID as the selectedCategory
+        (cat) => cat._id !== selectedCategory._id, // Exclude the category with the same ID as the selectedCategory
       );
     }
   }
@@ -112,7 +112,7 @@ const TaskCategoryAutoCompleteSelect = ({
                 !searchCategory ||
                 category.categoryName
                   .toLowerCase()
-                  .includes(searchCategory.toLowerCase())
+                  .includes(searchCategory.toLowerCase()),
             )
             .map((category) => (
               <li

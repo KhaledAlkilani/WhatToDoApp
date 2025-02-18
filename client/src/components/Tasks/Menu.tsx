@@ -25,7 +25,7 @@ interface MenuProps {
   onCategoryChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFetchPagedTasks?: (
     page: number,
-    status: TaskStatus | null
+    status: TaskStatus | null,
   ) => Promise<void>;
   onSearchTask?: (value: string) => void;
   onSearchCategory?: (value: string) => void;

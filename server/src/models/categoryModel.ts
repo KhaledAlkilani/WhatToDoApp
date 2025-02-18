@@ -23,7 +23,7 @@ const categorySchema: Schema = new Schema(
   {
     timestamps: true,
     collection: "Categories",
-  }
+  },
 );
 
 // Category model

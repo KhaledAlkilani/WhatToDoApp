@@ -19,7 +19,7 @@ interface TasksViewHeaderProps {
   onOpenTaskModal: (mode: TaskFormMode, taskId?: string) => void;
   onFetchPagedTasks?: (
     page: number,
-    status: TaskStatus | null
+    status: TaskStatus | null,
   ) => Promise<void>;
 }
 

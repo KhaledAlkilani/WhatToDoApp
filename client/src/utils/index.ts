@@ -5,7 +5,7 @@ export const getTaskStatus = (task: Task) => {
 };
 
 export const formatDateForInput = (
-  date: Date | string | null | undefined
+  date: Date | string | null | undefined,
 ): string => {
   if (!date) return "";
 
