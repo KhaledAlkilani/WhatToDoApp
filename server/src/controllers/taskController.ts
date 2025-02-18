@@ -38,7 +38,7 @@ export const createTask = async (req: Request, res: Response) => {
 
     const savedTask = await newTask.save();
     const populatedTask = await Task.findById(savedTask._id).populate(
-      TaskCategoryPopulateSelect.CATEGORY,
+      TaskCategoryPopulateSelect.CATEGORY
     );
     res.status(200).json(populatedTask);
   } catch (err: any) {
@@ -85,7 +85,7 @@ export const editTask = async (req: Request, res: Response) => {
         status, // Add the calculated status
         category: category._id,
       },
-      { new: true },
+      { new: true }
     ).populate(TaskCategoryPopulateSelect.CATEGORY);
 
     if (!updatedTask) {
@@ -123,7 +123,7 @@ export const deleteTask = async (req: Request, res: Response) => {
 // Search tasks by name
 export const searchTasksByName = async (
   req: Request,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   try {
     const { name } = req.query;
@@ -150,7 +150,7 @@ export const searchTasksByName = async (
 // Filter tasks by date range
 export const getTasksByDateRange = async (
   req: Request,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   const { startDate, endDate } = req.query;
 
@@ -171,114 +171,9 @@ export const getTasksByDateRange = async (
   }
 };
 
-// export const getTasksWithPagination = async (
-//   req: Request,
-//   res: Response
-// ): Promise<void> => {
-//   try {
-//     const page: number = parseInt(req.query.page as string, 10) || 1;
-//     const limit: number = parseInt(req.query.limit as string, 10) || 20;
-//     const skip: number = (page - 1) * limit;
-
-//     const status: TaskStatus | undefined = req.query.status as
-//       | TaskStatus
-//       | undefined;
-//     const search: string | undefined = req.query.search as string | undefined;
-
-//     // Build the aggregation pipeline
-//     const pipeline: any[] = [
-//       // First stage: Join with categories collection
-//       {
-//         $lookup: {
-//           from: "Categories",
-//           localField: "category",
-//           foreignField: "_id",
-//           as: "categoryData",
-//         },
-//       },
-//       // Unwind the category array created by lookup
-//       {
-//         $unwind: "$categoryData",
-//       },
-//     ];
-
-//     // Add search stage if search term is provided
-//     if (search && search.trim() !== "") {
-//       const searchTerm = search.trim();
-//       pipeline.push({
-//         $match: {
-//           $or: [
-//             { name: { $regex: searchTerm, $options: "i" } },
-//             {
-//               "categoryData.categoryName": {
-//                 $regex: searchTerm,
-//                 $options: "i",
-//               },
-//             },
-//           ],
-//         },
-//       });
-//     }
-
-//     // Add status filter if provided
-//     if (status && Object.values(TaskStatus).includes(status as TaskStatus)) {
-//       pipeline.push({
-//         $match: { status: status },
-//       });
-//     }
-
-//     // Add pagination stages
-//     const paginationPipeline = [
-//       // Get total count before pagination
-//       {
-//         $facet: {
-//           metadata: [{ $count: "total" }],
-//           data: [
-//             { $skip: skip },
-//             { $limit: limit },
-//             // Reshape the document to match your existing response format
-//             {
-//               $project: {
-//                 _id: 1,
-//                 name: 1,
-//                 content: 1,
-//                 startDate: 1,
-//                 endDate: 1,
-//                 status: 1,
-//                 category: "$categoryData",
-//               },
-//             },
-//           ],
-//         },
-//       },
-//     ];
-
-//     const finalPipeline = [...pipeline, ...paginationPipeline];
-
-//     // Execute the aggregation
-//     const [result] = await Task.aggregate(finalPipeline);
-
-//     const totalCount = result.metadata[0]?.total || 0;
-//     const totalPages = Math.ceil(totalCount / limit);
-
-//     res.status(200).json({
-//       tasks: result.data,
-//       pagination: {
-//         currentPage: page,
-//         totalPages,
-//         totalCount,
-//         limit,
-//       },
-//     });
-//   } catch (err) {
-//     console.error("Error fetching tasks with pagination:", err);
-//     res.status(500).json({ error: "Failed to fetch tasks" });
-//   }
-// };
-
 export const getTasksWithPagination = async (
   req: Request,
-  res: Response,
+  res: Response
 ): Promise<void> => {
   try {
     const page: number = parseInt(req.query.page as string, 10) || 1;
