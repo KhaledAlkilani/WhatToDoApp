@@ -171,6 +171,111 @@ export const getTasksByDateRange = async (
   }
 };
 
+// export const getTasksWithPagination = async (
+//   req: Request,
+//   res: Response
+// ): Promise<void> => {
+//   try {
+//     const page: number = parseInt(req.query.page as string, 10) || 1;
+//     const limit: number = parseInt(req.query.limit as string, 10) || 20;
+//     const skip: number = (page - 1) * limit;
+
+//     const status: TaskStatus | undefined = req.query.status as
+//       | TaskStatus
+//       | undefined;
+//     const search: string | undefined = req.query.search as string | undefined;
+
+//     // Build the aggregation pipeline
+//     const pipeline: any[] = [
+//       // First stage: Join with categories collection
+//       {
+//         $lookup: {
+//           from: "Categories",
+//           localField: "category",
+//           foreignField: "_id",
+//           as: "categoryData",
+//         },
+//       },
+//       // Unwind the category array created by lookup
+//       {
+//         $unwind: "$categoryData",
+//       },
+//     ];
+
+//     // Add search stage if search term is provided
+//     if (search && search.trim() !== "") {
+//       const searchTerm = search.trim();
+//       pipeline.push({
+//         $match: {
+//           $or: [
+//             { name: { $regex: searchTerm, $options: "i" } },
+//             {
+//               "categoryData.categoryName": {
+//                 $regex: searchTerm,
+//                 $options: "i",
+//               },
+//             },
+//           ],
+//         },
+//       });
+//     }
+
+//     // Add status filter if provided
+//     if (status && Object.values(TaskStatus).includes(status as TaskStatus)) {
+//       pipeline.push({
+//         $match: { status: status },
+//       });
+//     }
+
+//     // Add pagination stages
+//     const paginationPipeline = [
+//       // Get total count before pagination
+//       {
+//         $facet: {
+//           metadata: [{ $count: "total" }],
+//           data: [
+//             { $skip: skip },
+//             { $limit: limit },
+//             // Reshape the document to match your existing response format
+//             {
+//               $project: {
+//                 _id: 1,
+//                 name: 1,
+//                 content: 1,
+//                 startDate: 1,
+//                 endDate: 1,
+//                 status: 1,
+//                 category: "$categoryData",
+//               },
+//             },
+//           ],
+//         },
+//       },
+//     ];
+
+//     const finalPipeline = [...pipeline, ...paginationPipeline];
+
+//     // Execute the aggregation
+//     const [result] = await Task.aggregate(finalPipeline);
+
+//     const totalCount = result.metadata[0]?.total || 0;
+//     const totalPages = Math.ceil(totalCount / limit);
+
+//     res.status(200).json({
+//       tasks: result.data,
+//       pagination: {
+//         currentPage: page,
+//         totalPages,
+//         totalCount,
+//         limit,
+//       },
+//     });
+//   } catch (err) {
+//     console.error("Error fetching tasks with pagination:", err);
+//     res.status(500).json({ error: "Failed to fetch tasks" });
+//   }
+// };
+
 export const getTasksWithPagination = async (
   req: Request,
   res: Response
@@ -219,14 +324,6 @@ export const getTasksWithPagination = async (
         },
       });
     }
-
-    // Add status filter if provided
-    if (status && Object.values(TaskStatus).includes(status as TaskStatus)) {
-      pipeline.push({
-        $match: { status: status },
-      });
-    }
-
     // Add pagination stages
     const paginationPipeline = [
       // Get total count before pagination
@@ -261,8 +358,41 @@ export const getTasksWithPagination = async (
     const totalCount = result.metadata[0]?.total || 0;
     const totalPages = Math.ceil(totalCount / limit);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let updatedTasks = result.data.map((task: Task) => {
+      const taskStartDate = task.startDate ? new Date(task.startDate) : null;
+      const taskEndDate = task.endDate ? new Date(task.endDate) : null;
+
+      if (taskStartDate) {
+        taskStartDate.setHours(0, 0, 0, 0);
+      }
+
+      if (!taskStartDate || taskStartDate > today) {
+        task.status = TaskStatus.NEW;
+      } else if (
+        taskStartDate.getTime() === today.getTime() ||
+        (taskEndDate && taskEndDate >= today)
+      ) {
+        task.status = TaskStatus.IN_PROGRESS;
+      } else if (taskEndDate && taskEndDate < today) {
+        task.status = TaskStatus.DONE;
+      }
+
+      return task;
+    });
+
+    // Apply the status filter AFTER updating statuses
+    if (status && Object.values(TaskStatus).includes(status as TaskStatus)) {
+      updatedTasks = updatedTasks.filter(
+        (task: Task) => task.status === status
+      );
+    }
+
+    //  Send the updated tasks with correct status
     res.status(200).json({
-      tasks: result.data,
+      tasks: updatedTasks,
       pagination: {
         currentPage: page,
         totalPages,
@@ -275,3 +405,63 @@ export const getTasksWithPagination = async (
     res.status(500).json({ error: "Failed to fetch tasks" });
   }
 };
+
+// Leave it for testing
+// export const getTasks = async (req: Request, res: Response) => {
+//   try {
+//     const { search, startDate, endDate, sortBy, sortOrder, status } = req.query;
+
+//     let filter: Record<string, any> = {};
+
+//     // Search filter
+//     if (search) {
+//       filter.$or = [
+//         { name: { $regex: search, $options: "i" } },
+//         { description: { $regex: search, $options: "i" } },
+//       ];
+//     }
+
+//     // Date filtering
+//     if (startDate || endDate) {
+//       filter.startDate = {};
+//       if (startDate) filter.startDate.$gte = new Date(startDate as string);
+//       if (endDate) filter.startDate.$lte = new Date(endDate as string);
+//     }
+
+//     // Sorting logic
+//     let sortOptions: Record<string, any> = {};
+//     if (sortBy) {
+//       sortOptions[sortBy as string] = sortOrder === "desc" ? -1 : 1;
+//     }
+
+//     // Fetch tasks and populate category names
+//     let tasks = await Task.find(filter)
+//       .populate("category", "categoryName")
+//       .sort(sortOptions)
+//       .lean();
+
+//     const today = new Date();
+//     today.setHours(0, 0, 0, 0); // Ensure consistent date comparison
+
+//     // Dynamically update task statuses
+//     tasks = tasks.map((task) => {
+//       const taskStartDate = task.startDate ? new Date(task.startDate) : null;
+//       const taskEndDate = task.endDate ? new Date(task.endDate) : null;
+
+//       if (!taskStartDate || taskStartDate > today) {
+//         task.status = TaskStatus.NEW; // Not started
+//       } else if (taskEndDate && taskEndDate < today) {
+//         task.status = TaskStatus.DONE; // Finished
+//       } else {
+//         task.status = TaskStatus.IN_PROGRESS; // Ongoing
+//       }
+
+//       return task;
+//     });
+
+//     res.status(200).json(tasks);
+//   } catch (error) {
+//     console.error("Error fetching tasks:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };
