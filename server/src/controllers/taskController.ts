@@ -219,14 +219,6 @@ export const getTasksWithPagination = async (
         },
       });
     }
-
-    // Add status filter if provided
-    if (status && Object.values(TaskStatus).includes(status as TaskStatus)) {
-      pipeline.push({
-        $match: { status: status },
-      });
-    }
-
     // Add pagination stages
     const paginationPipeline = [
       // Get total count before pagination
@@ -261,8 +253,41 @@ export const getTasksWithPagination = async (
     const totalCount = result.metadata[0]?.total || 0;
     const totalPages = Math.ceil(totalCount / limit);
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let updatedTasks = result.data.map((task: Task) => {
+      const taskStartDate = task.startDate ? new Date(task.startDate) : null;
+      const taskEndDate = task.endDate ? new Date(task.endDate) : null;
+
+      if (taskStartDate) {
+        taskStartDate.setHours(0, 0, 0, 0);
+      }
+
+      if (!taskStartDate || taskStartDate > today) {
+        task.status = TaskStatus.NEW;
+      } else if (
+        taskStartDate.getTime() === today.getTime() ||
+        (taskEndDate && taskEndDate >= today)
+      ) {
+        task.status = TaskStatus.IN_PROGRESS;
+      } else if (taskEndDate && taskEndDate < today) {
+        task.status = TaskStatus.DONE;
+      }
+
+      return task;
+    });
+
+    // Apply the status filter AFTER updating statuses
+    if (status && Object.values(TaskStatus).includes(status as TaskStatus)) {
+      updatedTasks = updatedTasks.filter(
+        (task: Task) => task.status === status
+      );
+    }
+
+    //  Send the updated tasks with correct status
     res.status(200).json({
-      tasks: result.data,
+      tasks: updatedTasks,
       pagination: {
         currentPage: page,
         totalPages,
@@ -275,3 +300,63 @@ export const getTasksWithPagination = async (
     res.status(500).json({ error: "Failed to fetch tasks" });
   }
 };
+
+// Leave it for testing
+// export const getTasks = async (req: Request, res: Response) => {
+//   try {
+//     const { search, startDate, endDate, sortBy, sortOrder, status } = req.query;
+
+//     let filter: Record<string, any> = {};
+
+//     // Search filter
+//     if (search) {
+//       filter.$or = [
+//         { name: { $regex: search, $options: "i" } },
+//         { description: { $regex: search, $options: "i" } },
+//       ];
+//     }
+
+//     // Date filtering
+//     if (startDate || endDate) {
+//       filter.startDate = {};
+//       if (startDate) filter.startDate.$gte = new Date(startDate as string);
+//       if (endDate) filter.startDate.$lte = new Date(endDate as string);
+//     }
+
+//     // Sorting logic
+//     let sortOptions: Record<string, any> = {};
+//     if (sortBy) {
+//       sortOptions[sortBy as string] = sortOrder === "desc" ? -1 : 1;
+//     }
+
+//     // Fetch tasks and populate category names
+//     let tasks = await Task.find(filter)
+//       .populate("category", "categoryName")
+//       .sort(sortOptions)
+//       .lean();
+
+//     const today = new Date();
+//     today.setHours(0, 0, 0, 0); // Ensure consistent date comparison
+
+//     // Dynamically update task statuses
+//     tasks = tasks.map((task) => {
+//       const taskStartDate = task.startDate ? new Date(task.startDate) : null;
+//       const taskEndDate = task.endDate ? new Date(task.endDate) : null;
+
+//       if (!taskStartDate || taskStartDate > today) {
+//         task.status = TaskStatus.NEW; // Not started
+//       } else if (taskEndDate && taskEndDate < today) {
+//         task.status = TaskStatus.DONE; // Finished
+//       } else {
+//         task.status = TaskStatus.IN_PROGRESS; // Ongoing
+//       }
+
+//       return task;
+//     });
+
+//     res.status(200).json(tasks);
+//   } catch (error) {
+//     console.error("Error fetching tasks:", error);
+//     res.status(500).json({ error: "Internal Server Error" });
+//   }
+// };

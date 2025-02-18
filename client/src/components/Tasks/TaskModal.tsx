@@ -33,7 +33,7 @@ const TaskModal = ({
             {mode === TaskFormMode.CREATE ? "New Task" : "Edit Task"}
           </h2>
           <button
-            onClick={(e: React.FormEvent) => {
+            onClick={() => {
               onClose();
             }}
             className="text-gray-500 text-lg"
